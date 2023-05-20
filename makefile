@@ -10,6 +10,10 @@ ALLILP:= $(wildcard *_ILP.c)
 .PHONY: all
 all: $(patsubst %.cpp,%.out,$(filter-out $(patsubst %.h,%.cpp,$(wildcard *.h)), $(wildcard *.cpp)))
 
+.PHONY: product-c++11
+product-c++11: CFLAGS = -O3 -std=c++11
+product-c++11: $(ALLDEP) $(patsubst %.cpp,%.out,$(filter-out $(patsubst %.o,%.cpp,$(ALLDEP)) $(ALLILP), $(wildcard *.cpp)))
+
 .PHONY: product
 product: CFLAGS = -O3 -std=c++14
 product: $(ALLDEP) $(patsubst %.cpp,%.out,$(filter-out $(patsubst %.o,%.cpp,$(ALLDEP)) $(ALLILP), $(wildcard *.cpp)))
