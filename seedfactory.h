@@ -28,7 +28,7 @@ struct Read
     size_t idx;
 
     Read(std::string&& s, size_t i): seq(move(s)), idx(i) {};
-    Read(Read&& o): seq(move(o.seq)), idx(std::exchange(o.idx, 0)) {};
+    Read(Read&& o): seq(move(o.seq)) {idx = o.idx; o.idx = 0;};
 };
 
 class seedFactory
