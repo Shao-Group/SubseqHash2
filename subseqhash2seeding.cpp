@@ -65,12 +65,20 @@ void subseqhash2seeding::init(const char* table_filename)
 
 
     int x;
-    fscanf(filein, "%d", &num_valid);
+    int subsample = num_valid;
 
-    for(int i = 0; i < num_valid; i++)
+    if((num_valid&1) && (k&1))
+    {
+    	subsample--;
+    	valid[k/2] = 1;
+    }
+
+
+    for(int i = 0; i < k-2; i++)
     {
 		fscanf(filein, "%d", &x);
-		valid[x+1] = 1;
+		if(i < subsample)
+			valid[x+1] = 1;
     }
 }
 

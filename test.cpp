@@ -125,19 +125,20 @@ void pseudo_match(string s, string t, vector<int> &align, subseqhash2seeding & s
 
 int main(int argc, const char * argv[])
 {    
-    if(argc != 6)
+    if(argc != 7)
     {
-		printf("usage: genSubseq2Seeds.out readFile n k d randTableFile\n");
+		printf("usage: genSubseq2Seeds.out readFile n k d subsample randTableFile\n");
 		return 1;
     }
 
     n = atoi(argv[2]);
     k = atoi(argv[3]);
     d = atoi(argv[4]);
+    int subsample = atoi(argv[5]);
     dim1 = (n+1) * (k+1) * d;
 
-    subseqhash2seeding sub2(n, k, d);
-    sub2.init(argv[5]);
+    subseqhash2seeding sub2(n, k, d, subsample);
+    sub2.init(argv[6]);
 
 	ifstream fin(argv[1]);
 

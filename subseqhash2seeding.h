@@ -61,9 +61,10 @@ private:
 
 public:
 
-	subseqhash2seeding(int n1, int k1, int d1): seeding(n1, k1)
+	subseqhash2seeding(int n1, int k1, int d1, int subsample): seeding(n1, k1)
 	{
-		d = d1;
+			d = d1;
+	    num_valid = subsample;
 	    dim3 = d;
 	    dim2 = (k+1) * dim3;
 	    dim1 = (n+1) * dim2;

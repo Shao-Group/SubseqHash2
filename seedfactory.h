@@ -28,7 +28,7 @@ struct Read
     size_t idx;
 
     Read(std::string&& s, size_t i): seq(move(s)), idx(i) {};
-    Read(Read&& o): seq(move(o.seq)) {idx = o.idx; o.idx = 0;};
+    Read(Read&& o): seq(move(o.seq)), idx(std::exchange(o.idx, 0)) {};
 };
 
 class seedFactory
@@ -53,8 +53,8 @@ class seedFactory
     void atWork(int x);
 
 public:
-    seedFactory(const char* output_dir, int dir_len, int n1, int k1, int d1, const char* tablefile)	
-    :output_dir(output_dir), dir_len(dir_len), done(false), total_density(0.0), num_jobs(0), n(n1), k(k1), d(d1), myseeding(n1, k1, d1)
+    seedFactory(const char* output_dir, int dir_len, int n1, int k1, int d1, int subsample, const char* tablefile)	
+    :output_dir(output_dir), dir_len(dir_len), done(false), total_density(0.0), num_jobs(0), n(n1), k(k1), d(d1), myseeding(n1, k1, d1, subsample)
 	{
 	    dim1 = (n1+1) * (k1+1) * d1;
 	    myseeding.init(tablefile);
