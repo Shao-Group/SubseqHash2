@@ -432,7 +432,10 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
     for(int st = 0; st + n - 1 < len; st++)
     {
 		for(int j = 1; j <= k - 2; j++)
+		{
 		    ans1[j] = -INF;
+		    ans2[j] = -1;
+		}
 
 		for(int i = 1; i < n-1; i++)
 		{
@@ -478,7 +481,7 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
 		num = 0;
 		for(int j = 1; j <= k - 2; j++)
 		{
-		    if(!valid[j])
+		    if(!valid[j] || ans2[j] == -1)
 				continue;
 		    seed tmp;
 		    kmer hashval = 0;
