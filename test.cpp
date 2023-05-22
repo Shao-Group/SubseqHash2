@@ -8,9 +8,8 @@ using namespace std;
 
 int n,k,d, dim1;
 
-double ans[20] = {0};
-double ans10[20] = {0};
-double subans[50][20] = {0};
+double ans[20] = {0}; //Number of matches, Number of true-matches, precision of seed-matches, sequence cover, false sequence cover, matching cover, island(sc), density
+//seeding time, seed-match time 
 
 void pseudo_match(string s, string t, vector<int> &align, subseqhash2seeding & sub2)
 {
@@ -37,10 +36,12 @@ void pseudo_match(string s, string t, vector<int> &align, subseqhash2seeding & s
 	sub2.getSubseq2Seeds(t, dp, revdp, h, revh, seedt);
     end = clock();
 
-    ans[4] += (double)(end-start)/CLOCKS_PER_SEC;
+    ans[8] += (double)(end-start)/CLOCKS_PER_SEC;
 
 	vector<bool> scover(lens, 0);
 	vector<bool> scover2(lent, 0);
+	vector<bool> mcover(lens, 0);
+	vector<bool> mcover2(lent, 0);
 	vector<bool> fscover(lens, 0);
 	vector<bool> fscover2(lent, 0);
 
@@ -51,12 +52,14 @@ void pseudo_match(string s, string t, vector<int> &align, subseqhash2seeding & s
 
 	for(int j = 0; j < seednum; j++)
 	{	
+    	start = clock();
 		ssh_index* ht = index_build(seeds[j]);
 		matches.clear();
 
 		index_get(ht, seedt[j], matches);
+    	end = clock();
+    	ans[9] += (double)(end-start)/CLOCKS_PER_SEC;
 
-		// cout<<seeds[j].size()<<" "<<seedt[j].size()<<" "<<matches.size()<<endl;
 
 		int truematches = 0;
 		for(seedmatch m: matches)
@@ -80,6 +83,11 @@ void pseudo_match(string s, string t, vector<int> &align, subseqhash2seeding & s
 				for(int i = 0; i < n; i++)
 					if((m.s2->index>>i) & 1)
 						scover2[m.s2->st + i] = 1;
+
+				for(int i = m.s1->st; i <= m.s1->ed; i++)
+					mcover[i] = 1;
+				for(int i = m.s2->st; i <= m.s2->ed; i++)
+					mcover2[i] = 1;
 			}
 			else
 			{			
@@ -92,35 +100,69 @@ void pseudo_match(string s, string t, vector<int> &align, subseqhash2seeding & s
 			}
 		}
 
-		ans[3] += double(seeds[j].size())/s.length() + double(seedt[j].size())/t.length();
+		ans[7] += double(seeds[j].size())/s.length() + double(seedt[j].size())/t.length();
 		totalmatches += matches.size();
 		totaltruematches += truematches;
 	}		
 
 	int sc = 0, sc2 = 0;
 	int fsc = 0, fsc2 = 0;
+	int mc = 0, mc2 = 0;
+	int island1 = 0, island2 = 0;
+	int inv = 0;
 
 	for(int i = 0; i < lens; i++)
 	{
 		sc += scover[i];
 		fsc += fscover[i];
+		mc += mcover[i];
+
+		if(!scover[i])
+			inv++;
+		else if(inv)
+		{
+			island1 += inv * inv;
+			inv = 0;
+		}
+	}
+
+	if(inv)
+	{
+		island1 += inv * inv;
+		inv = 0;
 	}
 
 	for(int i = 0; i < lent; i++)
 	{
 		sc2 += scover2[i];
-		fsc2 += fscover[i];
+		fsc2 += fscover2[i];
+		mc2 += mcover2[i];
+
+		if(!scover2[i])
+			inv++;
+		else if(inv)
+		{
+			island2 += inv * inv;
+			inv = 0;
+		}
+	}
+	if(inv)
+	{
+		island2 += inv * inv;
+		inv = 0;
 	}
 
 	ans[0] += totalmatches;
 	ans[1] += totaltruematches;
 	if(totalmatches > 0)
 	{
-		ans[7] += 1;
+		ans[10] += 1;
 		ans[2] += double(totaltruematches)/totalmatches;
 	}
-	ans[5] += double(sc2) / lent + double(sc) / lens;
-	ans[9] += double(fsc2) / lent + double(fsc) / lens;
+	ans[3] += double(sc2) / lent + double(sc) / lens;
+	ans[4] += double(fsc2) / lent + double(fsc) / lens;
+	ans[5] += double(mc2) / lent + double(mc) / lens;
+	ans[6] += double(island2) / lent + double(island1) / lens;
 }
 
 int main(int argc, const char * argv[])
@@ -162,7 +204,9 @@ int main(int argc, const char * argv[])
 		pseudo_match(seq, seq2, align, sub2);
 		num++;
 	}	
-	printf("%d/%d, %.2lf, %.2lf, %.4lf, %.4lf, %.4lf, %.2lf, %.2lf\n", n, k, ans[0] / num, ans[1] / num, ans[2] / ans[7], ans[5] / (2*num), ans[9] / (2*num), ans[4], ans[3] / (2*num));
+	printf("%d/%d/%d/%d, %.2lf, %.2lf, %.4lf, %.4lf, %.4lf, %.4lf, %.2lf, %.4lf, %.2lf, %.2lf\n", n, k, d, subsample,
+		ans[0] / num, ans[1] / num, ans[2] / ans[10], ans[3] / (2*num), ans[4] / (2*num), ans[5] / (2*num), 
+		ans[6] / (2*num), ans[7] / (2*num), ans[8], ans[9]);
 
     // const char* table_filename = argv[5];
 
