@@ -26,7 +26,7 @@ void subseqhash2seeding::init(const char* table_filename)
     for(int i = 0; i < k; i++)
 		for(int j = 0; j < 4; j++)
 	    	for(int q = 0; q < d; q++)
-				fscanf(filein, "%d,%d\t", &B1[i][j][q], &B2[i][j][q]);
+				fscanf(filein, "%d,%d", &B1[i][j][q], &B2[i][j][q]);
 
     for(int i = 0; i < k; i++)
 		for(int j = 0; j < 4; j++)
@@ -40,7 +40,7 @@ void subseqhash2seeding::init(const char* table_filename)
     for(int i = 0; i < k; i++)
 		for(int j = 0; j < 4; j++)
 	   		for(int q = 0; q < d; q++)
-				fscanf(filein, "%d,%d\t", &revB1[i][j][q], &revB2[i][j][q]);
+				fscanf(filein, "%d,%d", &revB1[i][j][q], &revB2[i][j][q]);
 
     for(int i = 0; i < k; i++)
 		for(int j = 0; j < 4; j++)
@@ -48,7 +48,7 @@ void subseqhash2seeding::init(const char* table_filename)
 	
     for(int i = 0; i < k; i++)
 		for(int j = 0; j < 4; j++)
-	    	fscanf(filein, "%d,%d\t", &combine1[i][j], &combine2[i][j]);
+	    	fscanf(filein, "%d,%d", &combine1[i][j], &combine2[i][j]);
 	
 
     for(int i = 0; i < k; i++)
@@ -70,15 +70,14 @@ void subseqhash2seeding::init(const char* table_filename)
     if((num_valid&1) && (k&1))
     {
     	subsample--;
-    	valid[k/2] = 1;
+    	valid[k/2] = subsample+1;
     }
-
 
     for(int i = 0; i < k-2; i++)
     {
 		fscanf(filein, "%d", &x);
 		if(i < subsample)
-			valid[x+1] = 1;
+			valid[x+1] = i+1;
     }
 }
 
@@ -478,7 +477,6 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
 			}
 		}	
 
-		num = 0;
 		for(int j = 1; j <= k - 2; j++)
 		{
 		    if(!valid[j] || ans2[j] == -1)
@@ -597,17 +595,23 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
 				hashval = (hashval<<2) | alphabetIndex(s[tmp1[a]]);
 		    }
 
+		    num = valid[j] - 1;
+		    // if(ans1[j] == 655775779585278138l)
+		    // {
+		   	//  	char * tmtmp;
+		    // 	tmtmp = decode(hashval, 48, tmtmp);
+		    // 	printf("%d %d %d %d %u %s\n", ans2[j], st, tmp.st, tmp.ed, tmp.index, tmtmp);
+		    // }
 		    if(seeds[num].size() > 0 && ans1[j] == seeds[num].back().hashval && tmp.st == seeds[num].back().st 
 		    	&& seeds[num].back().index == tmp.index)
 			    continue;
+		    // if(seeds[num].size() > 0 && ans1[j] == seeds[num].back().hashval)
+			   //  continue;
 
 			tmp.hashval = ans1[j];
 		    tmp.str = hashval;
 		    tmp.str_rc = revComp(hashval, k);
 		    seeds[num].push_back(tmp);
-
-		    // printf("%d %d %lld %d %d %d\n", num, j, tmp.hashval, tmp.st, tmp.ed, tmp.index);
-		    num ++;
 		}
     }
 } // end of combine

@@ -16,7 +16,7 @@
 #define _SUBSEQHASH2SEEDING_H
 
 struct DPCell{
-    double f_max, f_min;
+    int64_t f_max, f_min;
     int g_max, g_min;
 };
 
@@ -47,7 +47,7 @@ private:
 	int C3[MAXK][ALPHABETSIZE]; 
 
 	int num_valid = 0;
-	bool valid[MAXK] = {0};
+	int valid[MAXK] = {0};
 
 	int d;
 	int dim1, dim2, dim3;
