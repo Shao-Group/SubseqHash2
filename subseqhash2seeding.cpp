@@ -596,17 +596,22 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
 		    }
 
 		    num = valid[j] - 1;
-		    // if(ans1[j] == 655775779585278138l)
-		    // {
-		   	//  	char * tmtmp;
-		    // 	tmtmp = decode(hashval, 48, tmtmp);
-		    // 	printf("%d %d %d %d %u %s\n", ans2[j], st, tmp.st, tmp.ed, tmp.index, tmtmp);
-		    // }
-		    if(seeds[num].size() > 0 && ans1[j] == seeds[num].back().hashval && tmp.st == seeds[num].back().st 
-		    	&& seeds[num].back().index == tmp.index)
-			    continue;
-		    // if(seeds[num].size() > 0 && ans1[j] == seeds[num].back().hashval)
-			   //  continue;
+
+		    // if(seeds[num].size() > 0 && ans1[j] == seeds[num].back().hashval && tmp.st == seeds[num].back().st 
+		    // 	&& seeds[num].back().index == tmp.index)
+			//     continue;
+		    if(seeds[num].size() > 0 && ans1[j] == seeds[num].back().hashval)
+		    {
+		    	if(tmp.st <= seeds[num].back().st && tmp.ed >= seeds[num].back().ed)
+					continue;
+				else
+					if(tmp.st >= seeds[num].back().st && tmp.ed <= seeds[num].back().ed)
+					{
+						seeds[num].back().st = tmp.st;
+						seeds[num].back().index = tmp.index;
+						continue;
+					}
+		    }
 
 			tmp.hashval = ans1[j];
 		    tmp.str = hashval;

@@ -187,6 +187,7 @@ int main(int argc, const char * argv[])
 	string seq, seq2, tmp;
 	int x;
 	int num = 0;
+	char* str;
 
 	while(fin>>tmp)
 	{	
@@ -200,31 +201,50 @@ int main(int argc, const char * argv[])
 		int len = seq.length();
 		cout<<seq.length()<<" "<<seq2.length()<<endl;
 
-	int chunk_size = sub2.getChunkSize();
-	int seednum = sub2.getNumPerWindow();
+		int chunk_size = sub2.getChunkSize();
+		int seednum = sub2.getNumPerWindow();
 
-	vector<vector<seed>> seeds(seednum, vector<seed>(0));
-	vector<vector<seed>> seedt(seednum, vector<seed>(0));
+		vector<vector<seed>> seeds(seednum, vector<seed>(0));
+		vector<vector<seed>> seedt(seednum, vector<seed>(0));
 
-	DPCell* dp = (DPCell*) malloc(sizeof *dp * chunk_size * (dim1));
-	DPCell* revdp = (DPCell*) malloc(sizeof *revdp * chunk_size * dim1);
-	int* h = (int*) malloc(sizeof *h * dim1);
-	int* revh = (int*) malloc(sizeof *revh * dim1);
+		DPCell* dp = (DPCell*) malloc(sizeof *dp * chunk_size * (dim1));
+		DPCell* revdp = (DPCell*) malloc(sizeof *revdp * chunk_size * dim1);
+		int* h = (int*) malloc(sizeof *h * dim1);
+		int* revh = (int*) malloc(sizeof *revh * dim1);
 
-	sub2.getSubseq2Seeds(seq, dp, revdp, h, revh, seeds);
-	sub2.getSubseq2Seeds(seq2, dp, revdp, h, revh, seedt);
+		sub2.getSubseq2Seeds(seq, dp, revdp, h, revh, seeds);
+		sub2.getSubseq2Seeds(seq2, dp, revdp, h, revh, seedt);
 
-vector<seedmatch> matches;
-	for(int j = 0; j < seednum ; j++)
-	{	
-		ssh_index* ht = index_build(seeds[j]);	
-int sz = seeds[j].size();	int sz1 = seedt[j^1].size();		
-matches.clear();
+		vector<seedmatch> matches;
 
-		index_get(ht, seedt[j^1], matches);
+		for(int j = 0; j < seednum ; j++)
+		{	
+			ssh_index* ht = index_build(seeds[j]);	
+			int sz = seeds[j].size();	
+			int sz1 = seedt[j^1].size();		
+			matches.clear();
 
-	cout<<sz<<" "<<sz1<<" "<<matches.size()<<endl;
-	}	}
+			index_get(ht, seedt[j^1], matches);
+
+			cout<<sz<<" "<<sz1<<" "<<matches.size()<<endl;
+
+			for(int z = 0; z < sz; z++)
+				if(seeds[j][z].hashval != seedt[j^1][sz1 -z - 1].hashval)
+				{
+					for(int y = z-2; y <= z+2; y++)
+					{
+						cout<<y<<" "<<seeds[j][y].hashval<<" "<<seeds[j][y].st<<" "<<seeds[j][y].ed<<endl;
+						cout<<seedt[j^1][sz1 -y - 1].hashval<<" "<<seedt[j^1][sz1 -y - 1].st<<" "<<seedt[j^1][sz1 -y - 1].ed<<endl;
+						cout<<seq.substr(seeds[j][y].st, seeds[j][y].ed- seeds[j][y].st + 1)<<endl;
+						cout<<seq2.substr(seedt[j^1][sz1 -y - 1].st, seedt[j^1][sz1 -y - 1].ed- seedt[j^1][sz1 -y - 1].st + 1)<<endl;
+
+						printf("%.48s\n", decode(seeds[j][y].str, k, str));
+						printf("%.48s\n", decode(seedt[j^1][sz1 -y - 1].str, k, str));
+					}
+					break;
+				}	
+		}	
+	}
 
     // const char* table_filename = argv[5];
 
