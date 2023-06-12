@@ -10,6 +10,8 @@ int n,k,d, dim1;
 
 double ans[20] = {0}; //Number of matches, Number of true-matches, precision of seed-matches, sequence cover, false sequence cover, matching cover, island(sc), density
 //seeding time, seed-match time 
+DPCell* dp, *revdp;
+int* h, *revh;
 
 void pseudo_match(string s, string t, vector<int> &align, subseqhash2seeding & sub2)
 {
@@ -18,16 +20,10 @@ void pseudo_match(string s, string t, vector<int> &align, subseqhash2seeding & s
 
 	vector<seedmatch> matches;
 
-	int chunk_size = sub2.getChunkSize();
 	int seednum = sub2.getNumPerWindow();
 
 	vector<vector<seed>> seeds(seednum, vector<seed>(0));
 	vector<vector<seed>> seedt(seednum, vector<seed>(0));
-
-	DPCell* dp = (DPCell*) malloc(sizeof *dp * chunk_size * (dim1));
-	DPCell* revdp = (DPCell*) malloc(sizeof *revdp * chunk_size * dim1);
-	int* h = (int*) malloc(sizeof *h * dim1);
-	int* revh = (int*) malloc(sizeof *revh * dim1);
 
     clock_t start,end;
 
@@ -181,6 +177,13 @@ int main(int argc, const char * argv[])
 
     subseqhash2seeding sub2(n, k, d, subsample);
     sub2.init(argv[6]);
+
+	int chunk_size = sub2.getChunkSize();
+
+	dp = (DPCell*) malloc(sizeof *dp * chunk_size * (dim1));
+	revdp = (DPCell*) malloc(sizeof *revdp * chunk_size * dim1);
+	h = (int*) malloc(sizeof *h * dim1);
+	revh = (int*) malloc(sizeof *revh * dim1);
 
 	ifstream fin(argv[1]);
 
