@@ -12,13 +12,22 @@ double ans[20] = {0}; //Number of matches, Number of true-matches, precision of 
 //seeding time, seed-match time 
 DPCell* dp, *revdp;
 int* h, *revh;
+const int maxlen = 1<<20;
+
+vector<seedmatch> matches;
+
+vector<bool> scover(maxlen, 0);
+vector<bool> scover2(maxlen, 0);
+vector<bool> mcover(maxlen, 0);
+vector<bool> mcover2(maxlen, 0);
+vector<bool> fscover(maxlen, 0);
+vector<bool> fscover2(maxlen, 0);
 
 void pseudo_match(string s, string t, vector<int> &align, subseqhash2seeding & sub2)
 {
 	int lens = s.length();
 	int lent = t.length();
 
-	vector<seedmatch> matches;
 
 	int seednum = sub2.getNumPerWindow();
 
@@ -34,12 +43,12 @@ void pseudo_match(string s, string t, vector<int> &align, subseqhash2seeding & s
 
     ans[8] += (double)(end-start)/CLOCKS_PER_SEC;
 
-	vector<bool> scover(lens, 0);
-	vector<bool> scover2(lent, 0);
-	vector<bool> mcover(lens, 0);
-	vector<bool> mcover2(lent, 0);
-	vector<bool> fscover(lens, 0);
-	vector<bool> fscover2(lent, 0);
+    fill(scover.begin(), scover.end(), false);
+    fill(scover2.begin(), scover2.end(), false);
+    fill(mcover.begin(), mcover.end(), false);
+    fill(mcover2.begin(), mcover2.end(), false);
+    fill(fscover.begin(), fscover.end(), false);
+    fill(fscover2.begin(), fscover2.end(), false);
 
 	int totalmatches = 0;
 	int totaltruematches = 0;
@@ -196,6 +205,7 @@ int main(int argc, const char * argv[])
 		fin>>seq2;				
 
 		int len = seq.length();
+		int lent = seq2.length();
 
     	vector<int> align;
 		for(int i = 0; i < len; i++)
