@@ -58,14 +58,28 @@ void pseudo_match(string s, string t, vector<int> &align, strobemerseeding seedi
 	ans[9] += (double)(end-start)/CLOCKS_PER_SEC;
 		
 	int truematches = 0;
+	int index1, index2, index3, index4;
 	for(seedmatch m: matches)
 	{
 		int tp = 0;
 
 		for(int i = 0; i < k; i++)
 			tp += (align[m.s1->st + i] == m.s2->st + i);
+		
+		index1 = m.s1->index % (1<<10);
+		index2 = m.s2->index % (1<<10);
+
 		for(int i = 0; i < k; i++)
-			tp += (align[m.s1->index + i] == m.s2->index + i);
+			tp += (align[m.s1->st + index1 + i] == m.s2->st + index2 + i);
+
+		if(w == 3)
+		{
+			index3 = (m.s1->index>>10);
+			index4 = (m.s2->index>>10);
+
+			for(int i = 0; i < k; i++)
+				tp += (align[m.s1->st + index3 + i] == m.s2->st + index4 + i);
+		}
 
 		if(tp >= k)
 		{
@@ -78,22 +92,29 @@ void pseudo_match(string s, string t, vector<int> &align, strobemerseeding seedi
 			for(int i = 0; i < k; i++)
 			{
 				scover[m.s1->st + i] = 1;
-				scover[m.s1->index + i] = 1;
+				scover[m.s1->st + index1 + i] = 1;
 				scover2[m.s2->st + i] = 1;
-				scover2[m.s2->index + i] = 1;
+				scover2[m.s2->st + index2 + i] = 1;
+				if(w == 3)
+				{
+					scover[m.s1->st + index3 + i] = 1;
+					scover2[m.s2->st + index4 + i] = 1;
+				}
 			}
 		}
 		else
 		{	
-			printf("%u %d %d %d %d %d\n", m.s1->hashval, tp, m.s1->st, m.s1->index, m.s2->st, m.s2->index);
-			printf("%s %s\n", s.substr(m.s1->st, k).c_str(), s.substr(m.s1->index, k).c_str());
-			printf("%s %s\n", t.substr(m.s2->st, k).c_str(), t.substr(m.s2->index, k).c_str());
 			for(int i = 0; i < k; i++)
 			{
 				fscover[m.s1->st + i] = 1;
-				fscover[m.s1->index + i] = 1;
+				fscover[m.s1->st + index1 + i] = 1;
 				fscover2[m.s2->st + i] = 1;
-				fscover2[m.s2->index + i] = 1;
+				fscover2[m.s2->st + index2 + i] = 1;
+				if(w == 3)
+				{
+					fscover[m.s1->st + index3 + i] = 1;
+					fscover2[m.s2->st + index4 + i] = 1;
+				}
 			}
 		}
 	}
