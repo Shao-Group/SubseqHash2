@@ -52,6 +52,7 @@ private:
 	int d;
 	int dim1, dim2, dim3;
 	int chunk_size = 500;
+	int64_t threshold;
 
 	int dpIndex(int d1, int d2, int d3, int d4);
 	int hIndex(int d2, int d3, int d4);
@@ -61,9 +62,10 @@ private:
 
 public:
 
-	subseqhash2seeding(int n1, int k1, int d1, int subsample): seeding(n1, k1)
+	subseqhash2seeding(int n1, int k1, int d1, int subsample, int64_t threshold1 = ((int64_t)1<<63)): seeding(n1, k1)
 	{
 			d = d1;
+	    threshold = threshold1;
 	    num_valid = subsample;
 	    dim3 = d;
 	    dim2 = (k+1) * dim3;

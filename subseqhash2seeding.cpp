@@ -479,7 +479,7 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
 
 		for(int j = 1; j <= k - 2; j++)
 		{
-		    if(!valid[j] || ans2[j] == -1)
+		    if(!valid[j] || ans2[j] == -1 || ans1[j] < threshold)
 				continue;
 		    seed tmp;
 		    kmer hashval = 0;
