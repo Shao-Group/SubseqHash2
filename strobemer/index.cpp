@@ -48,6 +48,73 @@ static inline uint64_t hash64(uint64_t key, uint64_t mask)
     return key;
 }//hash64
 
+uint64_t getblock64 ( const uint64_t * p, int i )
+{
+    return p[i];
+}
+
+inline uint64_t ROTL64 ( uint64_t x, int8_t r )
+{
+    return (x << r) | (x >> (64 - r));
+}
+
+uint64_t fmix64 ( uint64_t k )
+{
+    k ^= k >> 33;
+    k *= 0xff51afd7ed558ccd;
+    k ^= k >> 33;
+    k *= 0xc4ceb9fe1a85ec53;
+    k ^= k >> 33;
+
+    return k;
+}
+
+uint64_t MurmurHash3_x64_128 (const void * key, const uint64_t seed)
+{
+    const uint8_t * data = (const uint8_t*)key;
+
+    uint64_t h1 = seed;
+    uint64_t h2 = seed;
+
+    const uint64_t c1 = 0x87c37b91114253d5;
+    const uint64_t c2 = 0x4cf5ad432745937f;
+
+
+    const uint8_t * tail = (const uint8_t*)(data);
+
+    uint64_t k1 = 0;
+    uint64_t k2 = 0;
+
+    k1 ^= ((uint64_t)tail[ 7]) << 56;
+    k1 ^= ((uint64_t)tail[ 6]) << 48;
+    k1 ^= ((uint64_t)tail[ 5]) << 40;
+    k1 ^= ((uint64_t)tail[ 4]) << 32;
+    k1 ^= ((uint64_t)tail[ 3]) << 24;
+    k1 ^= ((uint64_t)tail[ 2]) << 16;
+    k1 ^= ((uint64_t)tail[ 1]) << 8;
+    k1 ^= ((uint64_t)tail[ 0]) << 0;
+    k1 *= c1; 
+    k1 = ROTL64(k1,31); 
+    k1 *= c2; 
+    h1 ^= k1;
+
+    //----------
+    // finalization
+
+    h1 ^= 8; h2 ^= 8;
+
+    h1 += h2;
+    h2 += h1;
+
+    h1 = fmix64(h1);
+    h2 = fmix64(h2);
+
+    h1 += h2;
+    h2 += h1;
+
+    return h1;
+}
+
 
 static unsigned char seq_nt4_table[256] = {
         0, 1, 2, 3,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,
@@ -195,7 +262,7 @@ static inline void update_window(std::deque <uint64_t> &q, uint64_t &q_min_val, 
 
 
 
-static inline void make_string_to_hashvalues2(std::string &seq, std::vector<uint64_t> &string_hashes, std::vector<unsigned int> &pos_to_seq_choord, int k, uint64_t kmask) {
+static inline void make_string_to_hashvalues2(std::string &seq, std::vector<uint64_t> &string_hashes, std::vector<unsigned int> &pos_to_seq_choord, int k, uint64_t kmask, uint64_t seed) {
     robin_hood::hash<uint64_t> robin_hash;
 //    std::vector<std::tuple<uint64_t, unsigned int, unsigned int> > kmers;
     unsigned int hash_count = 0;
@@ -208,8 +275,8 @@ static inline void make_string_to_hashvalues2(std::string &seq, std::vector<uint
             if (++l >= k) { // we find a k-mer
 //                uint64_t hash_k = x;
 //                uint64_t hash_k = robin_hash(x);
-                uint64_t hash_k = hash64(x, kmask);
-
+//                uint64_t hash_k = hash64(x, kmask);
+                uint64_t hash_k = MurmurHash3_x64_128(&x, seed);
                 string_hashes.push_back(hash_k);
                 pos_to_seq_choord.push_back( i - k + 1);
 //                pos_to_seq_choord[hash_count] = i - k + 1;
@@ -269,7 +336,7 @@ mers_vector seq_to_kmers(int k, std::string &seq, unsigned int ref_index)
     return  kmers;
 }
 
-mers_vector seq_to_randstrobes2(int n, int k, int w_min, int w_max, std::string &seq, unsigned int ref_index)
+mers_vector seq_to_randstrobes2(int n, int k, int w_min, int w_max, std::string &seq, unsigned int ref_index, uint64_t seed)
 {
     mers_vector randstrobes2;
 
@@ -286,7 +353,7 @@ mers_vector seq_to_randstrobes2(int n, int k, int w_min, int w_max, std::string 
     std::vector<uint64_t> string_hashes;
     std::vector<unsigned int> pos_to_seq_choord;
 //    robin_hood::unordered_map< unsigned int, unsigned int>  pos_to_seq_choord;
-    make_string_to_hashvalues2(seq, string_hashes, pos_to_seq_choord, k, kmask);
+    make_string_to_hashvalues2(seq, string_hashes, pos_to_seq_choord, k, kmask, seed);
     unsigned int seq_length = string_hashes.size();
 
     if (string_hashes.size() == 0) {
@@ -338,7 +405,7 @@ mers_vector seq_to_randstrobes2(int n, int k, int w_min, int w_max, std::string 
 }
 
 
-mers_vector seq_to_randstrobes3(int n, int k, int w_min, int w_max, std::string &seq, unsigned int ref_index)
+mers_vector seq_to_randstrobes3(int n, int k, int w_min, int w_max, std::string &seq, unsigned int ref_index, uint64_t seed)
 {
     mers_vector randstrobes3;
 
@@ -354,7 +421,7 @@ mers_vector seq_to_randstrobes3(int n, int k, int w_min, int w_max, std::string 
 //    std::vector<uint64_t> pos_to_seq_choord;
     std::vector<unsigned int> pos_to_seq_choord;
 //    robin_hood::unordered_map< unsigned int, unsigned int>  pos_to_seq_choord;
-    make_string_to_hashvalues2(seq, string_hashes, pos_to_seq_choord, k, kmask);
+    make_string_to_hashvalues2(seq, string_hashes, pos_to_seq_choord, k, kmask, seed);
     unsigned int seq_length = string_hashes.size();
 
     if (string_hashes.size() == 0) {
@@ -434,7 +501,7 @@ mers_vector seq_to_randstrobes3(int n, int k, int w_min, int w_max, std::string 
 
 
 
-mers_vector seq_to_minstrobes2(int n, int k, int w_min, int w_max, std::string &seq, unsigned int ref_index)
+mers_vector seq_to_minstrobes2(int n, int k, int w_min, int w_max, std::string &seq, unsigned int ref_index, uint64_t seed)
 {
     mers_vector minstrobes2;
     if (seq.length() < w_max) {
@@ -447,7 +514,7 @@ mers_vector seq_to_minstrobes2(int n, int k, int w_min, int w_max, std::string &
     std::vector<uint64_t> string_hashes;
     std::vector<unsigned int> pos_to_seq_choord;
 //    robin_hood::unordered_map< unsigned int, unsigned int>  pos_to_seq_choord;
-    make_string_to_hashvalues2(seq, string_hashes, pos_to_seq_choord, k, kmask);
+    make_string_to_hashvalues2(seq, string_hashes, pos_to_seq_choord, k, kmask, seed);
     unsigned int seq_length = string_hashes.size();
 //    unsigned int seq_length = seq.length();
 
@@ -500,7 +567,7 @@ mers_vector seq_to_minstrobes2(int n, int k, int w_min, int w_max, std::string &
 
 
 
-mers_vector seq_to_hybridstrobes2(int n, int k, int w_min, int w_max, std::string &seq, unsigned int ref_index)
+mers_vector seq_to_hybridstrobes2(int n, int k, int w_min, int w_max, std::string &seq, unsigned int ref_index, uint64_t seed)
 {
     mers_vector hybridstrobes2;
 
@@ -516,7 +583,7 @@ mers_vector seq_to_hybridstrobes2(int n, int k, int w_min, int w_max, std::strin
     std::vector<uint64_t> string_hashes;
     std::vector<unsigned int> pos_to_seq_choord;
 //    robin_hood::unordered_map< unsigned int, unsigned int>  pos_to_seq_choord;
-    make_string_to_hashvalues2(seq, string_hashes, pos_to_seq_choord, k, kmask);
+    make_string_to_hashvalues2(seq, string_hashes, pos_to_seq_choord, k, kmask, seed);
 //    std::cout << seq.length() << " " << string_hashes.size() << " " << k << std::endl;
     unsigned int seq_length = string_hashes.size();
 
@@ -635,7 +702,7 @@ mers_vector seq_to_hybridstrobes2(int n, int k, int w_min, int w_max, std::strin
 
 
 
-mers_vector seq_to_hybridstrobes3(int n, int k, int w_min, int w_max, std::string &seq, unsigned int ref_index)
+mers_vector seq_to_hybridstrobes3(int n, int k, int w_min, int w_max, std::string &seq, unsigned int ref_index, uint64_t seed)
 {
     mers_vector hybridstrobes3;
 
@@ -651,7 +718,7 @@ mers_vector seq_to_hybridstrobes3(int n, int k, int w_min, int w_max, std::strin
     std::vector<uint64_t> string_hashes;
     std::vector<unsigned int> pos_to_seq_choord;
 //    robin_hood::unordered_map< unsigned int, unsigned int>  pos_to_seq_choord;
-    make_string_to_hashvalues2(seq, string_hashes, pos_to_seq_choord, k, kmask);
+    make_string_to_hashvalues2(seq, string_hashes, pos_to_seq_choord, k, kmask, seed);
 //    std::cout << seq.length() << " " << string_hashes.size() << " " << k << std::endl;
     unsigned int seq_length = string_hashes.size();
 

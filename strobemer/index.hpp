@@ -22,6 +22,10 @@ static inline uint64_t hash64(uint64_t key, uint64_t mask);
 //typedef robin_hood::unordered_map< uint64_t , std::vector< std::tuple<unsigned int, unsigned int, unsigned int>> > seq_index2;
 //typedef robin_hood::unordered_map< uint64_t , std::vector<unsigned int> > seq_index;
 //typedef robin_hood::unordered_map< uint64_t , std::vector< std::tuple<unsigned int, unsigned int, unsigned int, unsigned int>> > seq_index3;
+uint64_t getblock64 ( const uint64_t * p, int i);
+inline uint64_t ROTL64 ( uint64_t x, int8_t r );
+uint64_t fmix64 ( uint64_t k );
+uint64_t MurmurHash3_x64_128 (const void * key, const uint64_t seed);
 
 typedef std::vector< std::tuple<uint64_t, unsigned int, unsigned int, unsigned int, unsigned int>> mers_vector;
 
@@ -45,11 +49,11 @@ static inline void get_next_strobe(std::vector<uint64_t> &string_hashes, uint64_
 //robin_hood::unordered_map< uint64_t, std::tuple<uint64_t, unsigned int >> index_vector_two_pos(std::vector< std::tuple<uint64_t, unsigned int, unsigned int, unsigned int>>  &mers_vector);
 
 mers_vector seq_to_kmers(int k, std::string &seq, unsigned int ref_index);
-mers_vector seq_to_randstrobes2(int n, int k, int w_min, int w_max, std::string &seq, unsigned int ref_index);
-mers_vector seq_to_minstrobes2(int n, int k, int w_min, int w_max, std::string &seq, unsigned int ref_index);
-mers_vector seq_to_hybridstrobes2(int n, int k, int w_min, int w_max, std::string &seq, unsigned int ref_index);
-mers_vector seq_to_randstrobes3(int n, int k, int w_min, int w_max, std::string &seq, unsigned int ref_index);
-mers_vector seq_to_hybridstrobes3(int n, int k, int w_min, int w_max, std::string &seq, unsigned int ref_index);
+mers_vector seq_to_randstrobes2(int n, int k, int w_min, int w_max, std::string &seq, unsigned int ref_index, uint64_t seed);
+mers_vector seq_to_minstrobes2(int n, int k, int w_min, int w_max, std::string &seq, unsigned int ref_index, uint64_t seed);
+mers_vector seq_to_hybridstrobes2(int n, int k, int w_min, int w_max, std::string &seq, unsigned int ref_index, uint64_t seed);
+mers_vector seq_to_randstrobes3(int n, int k, int w_min, int w_max, std::string &seq, unsigned int ref_index, uint64_t seed);
+mers_vector seq_to_hybridstrobes3(int n, int k, int w_min, int w_max, std::string &seq, unsigned int ref_index, uint64_t seed);
 
 typedef robin_hood::unordered_map< unsigned int, std::vector< std::tuple<uint64_t, unsigned int, unsigned int, unsigned int, unsigned int>>> three_pos_index;
 mers_vector construct_flat_vector_three_pos(three_pos_index &tmp_index, uint64_t &unique_elements);
