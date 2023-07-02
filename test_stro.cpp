@@ -6,7 +6,7 @@
 
 using namespace std;
 
-int k, w, w_min, w_max;
+int k, w, w_min, w_max, seednum;
 
 double ans[20] = {0}; //Number of matches, Number of true-matches, precision of seed-matches, sequence cover, false sequence cover, matching cover, island(sc), density
 //seeding time, seed-match time 
@@ -26,8 +26,8 @@ void pseudo_match(string s, string t, vector<int> &align, strobemerseeding seedi
 	int lens = s.length();
 	int lent = t.length();
 
-	vector<seed> seeds;
-	vector<seed> seedt;
+	vector<vector<seed>> seeds(seednum, vector<seed>(0));
+	vector<vector<seed>> seedt(seednum, vector<seed>(0));
 
     fill(scover.begin(), scover.end(), false);
     fill(scover2.begin(), scover2.end(), false);
@@ -48,80 +48,84 @@ void pseudo_match(string s, string t, vector<int> &align, strobemerseeding seedi
 	seeding.get_strobemers(t, seedt);
     end = clock();
     ans[8] += (double)(end-start)/CLOCKS_PER_SEC;
-    	
-	start = clock();
-	ssh_index* ht = index_build(seeds);
-	matches.clear();
+    
+	for(int j = 0; j < seednum; j++)
+	{		
+		start = clock();
+		ssh_index* ht = index_build(seeds[j]);
+		matches.clear();
 
-	index_get(ht, seedt, matches);
-	end = clock();
-	ans[9] += (double)(end-start)/CLOCKS_PER_SEC;
-		
-	int truematches = 0;
-	int index1, index2, index3, index4;
-	for(seedmatch m: matches)
-	{
-		int tp = 0;
-
-		for(int i = 0; i < k; i++)
-			tp += (align[m.s1->st + i] == m.s2->st + i);
-		
-		index1 = m.s1->index % (1<<10);
-		index2 = m.s2->index % (1<<10);
-
-		for(int i = 0; i < k; i++)
-			tp += (align[m.s1->st + index1 + i] == m.s2->st + index2 + i);
-
-		if(w == 3)
+		index_get(ht, seedt[j], matches);
+		end = clock();
+		ans[9] += (double)(end-start)/CLOCKS_PER_SEC;
+			
+		int truematches = 0;
+		int index1, index2, index3, index4;
+		for(seedmatch m: matches)
 		{
-			index3 = (m.s1->index>>10);
-			index4 = (m.s2->index>>10);
+			int tp = 0;
 
 			for(int i = 0; i < k; i++)
-				tp += (align[m.s1->st + index3 + i] == m.s2->st + index4 + i);
-		}
+				tp += (align[m.s1->st + i] == m.s2->st + i);
+			
+			index1 = m.s1->index % (1<<10);
+			index2 = m.s2->index % (1<<10);
 
-		if(tp >= k)
-		{
-			truematches++;	
-
-			for(int i = m.s1->st; i <= m.s1->ed; i++)
-				mcover[i] = 1;
-			for(int i = m.s2->st; i <= m.s2->ed; i++)
-				mcover2[i] = 1;
 			for(int i = 0; i < k; i++)
+				tp += (align[m.s1->st + index1 + i] == m.s2->st + index2 + i);
+
+			if(w == 3)
 			{
-				scover[m.s1->st + i] = 1;
-				scover[m.s1->st + index1 + i] = 1;
-				scover2[m.s2->st + i] = 1;
-				scover2[m.s2->st + index2 + i] = 1;
-				if(w == 3)
+				index3 = (m.s1->index>>10);
+				index4 = (m.s2->index>>10);
+
+				for(int i = 0; i < k; i++)
+					tp += (align[m.s1->st + index3 + i] == m.s2->st + index4 + i);
+			}
+
+			if(tp >= k)
+			{
+				truematches++;	
+
+				for(int i = m.s1->st; i <= m.s1->ed; i++)
+					mcover[i] = 1;
+				for(int i = m.s2->st; i <= m.s2->ed; i++)
+					mcover2[i] = 1;
+				for(int i = 0; i < k; i++)
 				{
-					scover[m.s1->st + index3 + i] = 1;
-					scover2[m.s2->st + index4 + i] = 1;
+					scover[m.s1->st + i] = 1;
+					scover[m.s1->st + index1 + i] = 1;
+					scover2[m.s2->st + i] = 1;
+					scover2[m.s2->st + index2 + i] = 1;
+					if(w == 3)
+					{
+						scover[m.s1->st + index3 + i] = 1;
+						scover2[m.s2->st + index4 + i] = 1;
+					}
+				}
+			}
+			else
+			{	
+				for(int i = 0; i < k; i++)
+				{
+					fscover[m.s1->st + i] = 1;
+					fscover[m.s1->st + index1 + i] = 1;
+					fscover2[m.s2->st + i] = 1;
+					fscover2[m.s2->st + index2 + i] = 1;
+					if(w == 3)
+					{
+						fscover[m.s1->st + index3 + i] = 1;
+						fscover2[m.s2->st + index4 + i] = 1;
+					}
 				}
 			}
 		}
-		else
-		{	
-			for(int i = 0; i < k; i++)
-			{
-				fscover[m.s1->st + i] = 1;
-				fscover[m.s1->st + index1 + i] = 1;
-				fscover2[m.s2->st + i] = 1;
-				fscover2[m.s2->st + index2 + i] = 1;
-				if(w == 3)
-				{
-					fscover[m.s1->st + index3 + i] = 1;
-					fscover2[m.s2->st + index4 + i] = 1;
-				}
-			}
-		}
+
+		ans[7] += double(seeds.size())/s.length() + double(seedt.size())/t.length();
+		totalmatches += matches.size();
+		totaltruematches += truematches;
 	}
 
-	ans[7] += double(seeds.size())/s.length() + double(seedt.size())/t.length();
-	totalmatches += matches.size();
-	totaltruematches += truematches;
 
 	int sc = 0, sc2 = 0;
 	int fsc = 0, fsc2 = 0;
@@ -189,8 +193,9 @@ int main(int argc, const char * argv[])
     w = atoi(argv[3]);
     w_min = atoi(argv[4]);
     w_max = atoi(argv[5]);
+    seednum = atoi(argv[6]);
 
-	strobemerseeding seeding(k, w, w_min, w_max);
+	strobemerseeding seeding(k, w, w_min, w_max, seednum);
 
 	ifstream fin(argv[1]);
 
