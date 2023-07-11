@@ -58,18 +58,18 @@ private:
 	void DP(std::string s, size_t start, size_t end, DPCell* dp, int* h);
 	void revDP(std::string s, size_t start, size_t end, DPCell* revdp, int* revh);
 	void combine(std::string s, size_t start, size_t end, DPCell* dp, DPCell* revdp, std::vector<std::vector<seed>>& seeds);
-	int prek;
+	int w;
 	
 public:
 
-	subseq2strobeseeding(int n1, int k1, int d1, int subsample, int prek1): seeding(n1, k1)
+	subseq2strobeseeding(int n1, int k1, int d1, int subsample, int w1): seeding(n1, k1)
 	{
 			d = d1;
 	    num_valid = subsample;
 	    dim3 = d;
 	    dim2 = (k+1) * dim3;
 	    dim1 = (n+1) * dim2;
-	    prek = prek1;
+	    w = w1;
 	}
 
 	void init(const char* table_filename);

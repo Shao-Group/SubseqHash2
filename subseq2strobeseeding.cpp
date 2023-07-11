@@ -426,12 +426,10 @@ void subseq2strobeseeding::combine(std::string s, size_t start, size_t end, DPCe
     int64_t ans1[MAXK];
     int ans2[MAXK];
     int ans3[MAXK];
+    std::vector<std::vector<seed>> seedtmp(num_valid, std::vector<seed>(0));
 
     for(int st = 0; st + n - 1 < len; st++)
     {
-	    if(st + start < prek)
-	    	continue;
-
 		for(int j = 1; j <= k - 2; j++)
 		{
 		    ans1[j] = -INF;
@@ -481,9 +479,15 @@ void subseq2strobeseeding::combine(std::string s, size_t start, size_t end, DPCe
 
 		for(int j = 1; j <= k - 2; j++)
 		{
-		    if(!valid[j] || ans2[j] == -1)
-				continue;
 		    seed tmp;
+		    if(!valid[j])
+				continue;
+			if(ans2[j] == -1) //make sure each position has a seed
+			{
+				tmp.hashval = 0;
+				seeds[valid[j] - 1].push_back(tmp);
+			}
+
 		    kmer hashval = 0;
 		    std::vector<size_t> index, tmp1;
 
@@ -585,9 +589,9 @@ void subseq2strobeseeding::combine(std::string s, size_t start, size_t end, DPCe
 		    }
 
 
-		    //tmp.st = index[0];
-		    tmp.st = start + st - prek;
+		    tmp.st = start + st;
 		    tmp.ed = tmp1[0];
+		    tmp.index = 0;
 
 		    for(size_t a: index)
 		    	tmp.index |= 1<<(a - tmp.st);
@@ -600,20 +604,52 @@ void subseq2strobeseeding::combine(std::string s, size_t start, size_t end, DPCe
 
 		    num = valid[j] - 1;
 
-		    // if(seeds[num].size() > 0 && ans1[j] == seeds[num].back().hashval && tmp.st == seeds[num].back().st 
-		    // 	&& seeds[num].back().index == tmp.index)
-			//     continue;
-		    tmp.index |= ((1<<prek) - 1);
-
-		    kmer enc = 0lu;
-			for(int i=0; i<prek; i+=1)
-				enc = (enc << 2) | alphabetIndex(s[tmp.st + i]);
-
-		    tmp.hashval = tmp.str = hashval + (enc << (2*k));
+		    tmp.hashval = ans1[j];
+		    tmp.str = hashval;
 		    //tmp.str_rc = revComp(hashval, k);
-		    seeds[num].push_back(tmp);
+		    seedtmp[num].push_back(tmp);
 		}
     }
+
+
+    for(int st = 0; st + w * n + k <= len; st++)
+    {
+    	for(int j = 1; j <= k-2; j++)
+    		if(valid[j])
+	    	{
+	    		int num = valid[j] - 1;
+
+	    		if(seedtmp[num][st + k].hashval == 0)
+	    			break;
+	    		if(w == 2 && seedtmp[num][st + k + n].hashval == 0)
+	    			break;
+
+	    		seed tmp;
+	    		tmp.st = st;
+	    		tmp.ed = seedtmp[num][st + k + (w-1) * n].ed;
+
+	    		tmp.index = ((1<<k) - 1);
+	    		for(int window = 0; window < w; window++)
+	    			tmp.index |= (seedtmp[num][st + k + window * n].index << (k + window * n));
+
+	    		kmer enc = 0lu;
+				for(int i = 0; i < k; i+=1)
+					enc = (enc << 2) | alphabetIndex(s[st + i]);
+
+				tmp.hashval = enc;
+
+				for(int window = 0; window < w; window++)
+					enc = (enc << (2*k)) + seedtmp[num][st + k + window * n].str;
+
+				tmp.str = enc;
+
+				for(int window = 0; window < w; window++)
+					tmp.hashval += seedtmp[num][st + k + window * n].hashval;
+
+				seeds[num].push_back(tmp);
+	    	}
+    }
+
 } // end of combine
 
 void subseq2strobeseeding::getSubseq2Seeds(std::string s, DPCell* dp, DPCell* revdp, int* h, int* revh,
@@ -633,6 +669,6 @@ void subseq2strobeseeding::getSubseq2Seeds(std::string s, DPCell* dp, DPCell* re
 		revDP(s, st, en, revdp, revh);
 		combine(s, st, en, dp, revdp, seeds);
 
-		st = en - n + 2;
+		st = en - 2 * n  - k + 2;
     }
 }

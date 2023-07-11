@@ -7,7 +7,7 @@
 using namespace std;
 
 int n,k,d, dim1;
-int prek;
+int w;
 
 double ans[20] = {0}; //Number of matches, Number of true-matches, precision of seed-matches, sequence cover, false sequence cover, matching cover, island(sc), density
 //seeding time, seed-match time 
@@ -56,8 +56,9 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
 
 	uint64_t x1;
 
+
 	for(int j = 0; j < seednum; j++)
-	{	
+	{
     	start = clock();
 		ssh_index* ht = index_build(seeds[j]);
 		matches.clear();
@@ -72,7 +73,7 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
 		{
 			int tp = 0;
 
-			for(int i = 0; i < n + prek; i++)
+			for(int i = 0; i < n * w + k; i++)
 				if((m.s1->index>>i) & 1)
 				{
 					x1 = align[m.s1->st + i]; 
@@ -83,10 +84,10 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
 			if(2 * tp >= k)
 			{
 				truematches++;	
-				for(int i = 0; i < n + prek; i++)
+				for(int i = 0; i < n * w + k; i++)
 					if((m.s1->index>>i) & 1)
 						scover[m.s1->st + i] = 1;
-				for(int i = 0; i < n + prek; i++)
+				for(int i = 0; i < n * w + k; i++)
 					if((m.s2->index>>i) & 1)
 						scover2[m.s2->st + i] = 1;
 
@@ -97,10 +98,10 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
 			}
 			else
 			{			
-				for(int i = 0; i < n + prek; i++)
+				for(int i = 0; i < n * w + k; i++)
 					if((m.s1->index>>i) & 1)
 						fscover[m.s1->st + i] = 1;
-				for(int i = 0; i < n + prek; i++)
+				for(int i = 0; i < n * w + k; i++)
 					if((m.s2->index>>i) & 1)
 						fscover2[m.s2->st + i] = 1;
 			}
@@ -183,10 +184,10 @@ int main(int argc, const char * argv[])
     k = atoi(argv[3]);
     d = atoi(argv[4]);
     int subsample = atoi(argv[5]);
-    prek = atoi(argv[6]);
+    w = atoi(argv[6]);
     dim1 = (n+1) * (k+1) * d;
 
-    subseq2strobeseeding sub2(n, k, d, subsample, prek);
+    subseq2strobeseeding sub2(n, k, d, subsample, w);
     sub2.init(argv[7]);
 
 	int chunk_size = sub2.getChunkSize();
