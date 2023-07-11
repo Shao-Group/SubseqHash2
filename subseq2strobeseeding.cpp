@@ -626,7 +626,7 @@ void subseq2strobeseeding::combine(std::string s, size_t start, size_t end, DPCe
 	    			break;
 
 	    		seed tmp;
-	    		tmp.st = st;
+	    		tmp.st = st + start;
 
 	    		tmp.ed = seedtmp[num][st + k + (w-1) * n].ed;
 

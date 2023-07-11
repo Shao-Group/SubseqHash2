@@ -84,6 +84,7 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
 			if(2 * tp >= k)
 			{
 				truematches++;	
+
 				for(int i = 0; i < n * w + k; i++)
 					if((m.s1->index>>i) & 1)
 						scover[m.s1->st + i] = 1;
@@ -105,7 +106,7 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
 					if((m.s2->index>>i) & 1)
 						fscover2[m.s2->st + i] = 1;
 			}
-		}
+		} 
 
 		ans[7] += double(seeds[j].size())/s.length() + double(seedt[j].size())/t.length();
 		totalmatches += matches.size();
