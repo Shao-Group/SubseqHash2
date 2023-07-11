@@ -629,8 +629,7 @@ void subseq2strobeseeding::combine(std::string s, size_t start, size_t end, DPCe
 	    		tmp.st = st;
 
 	    		tmp.ed = seedtmp[num][st + k + (w-1) * n].ed;
-	    		if(tmp.ed > 100000)
-	    			printf("%d %d %d %d %d %d\n", st, j, num, st + k + (w-1) * n, seedtmp[num][st + k + (w-1) * n].ed, tmp.ed);
+
 	    		tmp.index = ((1<<k) - 1);
 	    		for(int window = 0; window < w; window++)
 	    			tmp.index |= (seedtmp[num][st + k + window * n].index << (k + window * n));
