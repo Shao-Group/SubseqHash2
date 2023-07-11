@@ -485,7 +485,8 @@ void subseq2strobeseeding::combine(std::string s, size_t start, size_t end, DPCe
 			if(ans2[j] == -1) //make sure each position has a seed
 			{
 				tmp.hashval = 0;
-				seeds[valid[j] - 1].push_back(tmp);
+				seedtmp[valid[j] - 1].push_back(tmp);
+				continue;
 			}
 
 		    kmer hashval = 0;
@@ -626,8 +627,10 @@ void subseq2strobeseeding::combine(std::string s, size_t start, size_t end, DPCe
 
 	    		seed tmp;
 	    		tmp.st = st;
-	    		tmp.ed = seedtmp[num][st + k + (w-1) * n].ed;
 
+	    		tmp.ed = seedtmp[num][st + k + (w-1) * n].ed;
+	    		if(tmp.ed > 100000)
+	    			printf("%d %d %d %d %d %d\n", st, j, num, st + k + (w-1) * n, seedtmp[num][st + k + (w-1) * n].ed, tmp.ed);
 	    		tmp.index = ((1<<k) - 1);
 	    		for(int window = 0; window < w; window++)
 	    			tmp.index |= (seedtmp[num][st + k + window * n].index << (k + window * n));
