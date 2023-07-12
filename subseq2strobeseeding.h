@@ -52,17 +52,17 @@ private:
 	int d;
 	int dim1, dim2, dim3;
 	int chunk_size = 500;
+	int w, prek;
 
 	int dpIndex(int d1, int d2, int d3, int d4);
 	int hIndex(int d2, int d3, int d4);
 	void DP(std::string s, size_t start, size_t end, DPCell* dp, int* h);
 	void revDP(std::string s, size_t start, size_t end, DPCell* revdp, int* revh);
 	void combine(std::string s, size_t start, size_t end, DPCell* dp, DPCell* revdp, std::vector<std::vector<seed>>& seeds);
-	int w;
 	
 public:
 
-	subseq2strobeseeding(int n1, int k1, int d1, int subsample, int w1): seeding(n1, k1)
+	subseq2strobeseeding(int n1, int k1, int d1, int subsample, int w1, int prek1): seeding(n1, k1)
 	{
 			d = d1;
 	    num_valid = subsample;
@@ -70,6 +70,7 @@ public:
 	    dim2 = (k+1) * dim3;
 	    dim1 = (n+1) * dim2;
 	    w = w1;
+	    prek = prek1;
 	}
 
 	void init(const char* table_filename);

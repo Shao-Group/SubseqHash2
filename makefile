@@ -1,11 +1,8 @@
 CC=gcc
 CPP=g++
 CFLAGS+= -m64 -g -Wall -std=c++14
-LDFLAGS= -L$$GUROBI_HOME/lib -lgurobi91
-LIBS=./strobemer/index.o
-INC= $$GUROBI_HOME/include/
-ALLDEP:= $(patsubst %.h,%.o,$(wildcard *.h))
-ALLILP:= $(wildcard *_ILP.c)
+LIBS=
+ALLDEP:= $(patsubst %.h,%.o,$(wildcard *.h)) ./strobemer/index.o
 
 .PHONY: all
 all: strobemer $(patsubst %.cpp,%.out,$(filter-out $(patsubst %.h,%.cpp,$(wildcard *.h)), $(wildcard *.cpp)))
@@ -34,10 +31,6 @@ strobemer: ./strobemer/index.cpp
 	$(CPP) $(CFLAGS) -MMD -c $< -o $@
 %.o: %.c %.h makefile
 	$(CC) $(CFLAGS) -MMD -c $< -o $@
-
-#gurobi make
-%_ILP: %_ILP.c $(ALLDEP)
-	$(CC) $(CFLAGS) -o $@ $^ -I$(INC) $(LDFLAGS) -lm
 
 .PHONY: clean
 

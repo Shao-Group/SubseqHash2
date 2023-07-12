@@ -613,40 +613,40 @@ void subseq2strobeseeding::combine(std::string s, size_t start, size_t end, DPCe
     }
 
 
-    for(int st = 0; st + w * n + k <= len; st++)
+    for(int st = 0; st + w * n + prek <= len; st++)
     {
     	for(int j = 1; j <= k-2; j++)
     		if(valid[j])
 	    	{
 	    		int num = valid[j] - 1;
 
-	    		if(seedtmp[num][st + k].hashval == 0)
+	    		if(seedtmp[num][st + prek].hashval == 0)
 	    			break;
-	    		if(w == 2 && seedtmp[num][st + k + n].hashval == 0)
+	    		if(w == 2 && seedtmp[num][st + prek + n].hashval == 0)
 	    			break;
 
 	    		seed tmp;
 	    		tmp.st = st + start;
 
-	    		tmp.ed = seedtmp[num][st + k + (w-1) * n].ed;
+	    		tmp.ed = seedtmp[num][st + prek + (w-1) * n].ed;
 
-	    		tmp.index = ((1<<k) - 1);
+	    		tmp.index = ((1<<prek) - 1);
 	    		for(int window = 0; window < w; window++)
-	    			tmp.index |= (seedtmp[num][st + k + window * n].index << (k + window * n));
+	    			tmp.index |= (seedtmp[num][st + prek + window * n].index << (prek + window * n));
 
 	    		kmer enc = 0lu;
-				for(int i = 0; i < k; i+=1)
-					enc = (enc << 2) | alphabetIndex(s[st + i]);
+				for(int i = 0; i < prek; i+=1)
+					enc = (enc << 2) | alphabetIndex(s[st + start + i]);
 
 				tmp.hashval = enc;
 
 				for(int window = 0; window < w; window++)
-					enc = (enc << (2*k)) + seedtmp[num][st + k + window * n].str;
+					enc = (enc << (2*k)) + seedtmp[num][st + prek + window * n].str;
 
 				tmp.str = enc;
 
 				for(int window = 0; window < w; window++)
-					tmp.hashval += seedtmp[num][st + k + window * n].hashval;
+					tmp.hashval += seedtmp[num][st + prek + window * n].hashval;
 
 				seeds[num].push_back(tmp);
 	    	}

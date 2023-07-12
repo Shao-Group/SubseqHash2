@@ -7,7 +7,7 @@
 using namespace std;
 
 int n,k,d, dim1;
-int w;
+int w, prek;
 
 double ans[20] = {0}; //Number of matches, Number of true-matches, precision of seed-matches, sequence cover, false sequence cover, matching cover, island(sc), density
 //seeding time, seed-match time 
@@ -73,7 +73,7 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
 		{
 			int tp = 0;
 
-			for(int i = 0; i < n * w + k; i++)
+			for(int i = 0; i < n * w + prek; i++)
 				if((m.s1->index>>i) & 1)
 				{
 					x1 = align[m.s1->st + i]; 
@@ -81,14 +81,35 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
 						tp += (m.s2->index>>(x1-m.s2->st)) & 1;
 				}
 
-			if(2 * tp >= k)
+			// cout<<m.s1->st<<" "<<m.s2->st<<" "<<align[m.s1->st]<<endl;
+			// cout<<tp<<" "<<k*w + prek<<endl;
+
+			// char* str1 = (char*)malloc(sizeof(char) * (k*w+prek));
+			// char* str2 = (char*)malloc(sizeof(char) * (k*w+prek));
+
+			// decode(m.s1->str, k*w+prek, str1);
+			// decode(m.s2->str, k*w+prek, str2);
+			// for(int i = 0; i < n * w + prek; i++)
+			// 	if((m.s1->index>>i) & 1)
+			// 		cout<<s[m.s1->st + i];
+			// cout<<" ";
+
+			// for(int i = 0; i < n * w + prek; i++)
+			// 	if((m.s2->index>>i) & 1)
+			// 		cout<<t[m.s2->st + i];
+			// cout<<"\n";				
+
+			// printf("%.*s %.*s\n", (k*w+prek), str1, (k*w+prek),str2);
+			// cout<<s.substr(m.s1->st, prek)<<" "<<t.substr(m.s2->st, prek)<<endl;
+
+			if(2 * tp >= k * w + prek)
 			{
 				truematches++;	
 
-				for(int i = 0; i < n * w + k; i++)
+				for(int i = 0; i < n * w + prek; i++)
 					if((m.s1->index>>i) & 1)
 						scover[m.s1->st + i] = 1;
-				for(int i = 0; i < n * w + k; i++)
+				for(int i = 0; i < n * w + prek; i++)
 					if((m.s2->index>>i) & 1)
 						scover2[m.s2->st + i] = 1;
 
@@ -99,10 +120,10 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
 			}
 			else
 			{			
-				for(int i = 0; i < n * w + k; i++)
+				for(int i = 0; i < n * w + prek; i++)
 					if((m.s1->index>>i) & 1)
 						fscover[m.s1->st + i] = 1;
-				for(int i = 0; i < n * w + k; i++)
+				for(int i = 0; i < n * w + prek; i++)
 					if((m.s2->index>>i) & 1)
 						fscover2[m.s2->st + i] = 1;
 			}
@@ -116,7 +137,7 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
 	int sc = 0, sc2 = 0;
 	int fsc = 0, fsc2 = 0;
 	int mc = 0, mc2 = 0;
-	int island1 = 0, island2 = 0;
+	long long island1 = 0, island2 = 0;
 	int inv = 0;
 
 	for(int i = 0; i < lens; i++)
@@ -129,14 +150,14 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
 			inv++;
 		else if(inv)
 		{
-			island1 += inv * inv;
+			island1 += (long long)inv * inv;
 			inv = 0;
 		}
 	}
 
 	if(inv)
 	{
-		island1 += inv * inv;
+		island1 += (long long)inv * inv;
 		inv = 0;
 	}
 
@@ -150,13 +171,13 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
 			inv++;
 		else if(inv)
 		{
-			island2 += inv * inv;
+			island2 += (long long)inv * inv;
 			inv = 0;
 		}
 	}
 	if(inv)
 	{
-		island2 += inv * inv;
+		island2 += (long long)inv * inv;
 		inv = 0;
 	}
 
@@ -175,9 +196,9 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
 
 int main(int argc, const char * argv[])
 {    
-    if(argc != 8)
+    if(argc != 9)
     {
-		printf("usage: genSubseq2Seeds.out readFile n k d subsample prek randTableFile\n");
+		printf("usage: genSubseq2Seeds.out readFile n k d subsample w prek randTableFile\n");
 		return 1;
     }
 
@@ -186,10 +207,11 @@ int main(int argc, const char * argv[])
     d = atoi(argv[4]);
     int subsample = atoi(argv[5]);
     w = atoi(argv[6]);
+    prek = atoi(argv[7]);
     dim1 = (n+1) * (k+1) * d;
 
-    subseq2strobeseeding sub2(n, k, d, subsample, w);
-    sub2.init(argv[7]);
+    subseq2strobeseeding sub2(n, k, d, subsample, w, prek);
+    sub2.init(argv[8]);
 
 	int chunk_size = sub2.getChunkSize();
 
@@ -221,7 +243,7 @@ int main(int argc, const char * argv[])
 		pseudo_match(seq, seq2, align, sub2);
 		num++;
 	}	
-	printf("%d/%d/%d/%d/%d, %.2lf, %.2lf, %.4lf, %.4lf, %.4lf, %.4lf, %.2lf, %.4lf, %.2lf, %.2lf\n", n, k, d, subsample, w,
+	printf("%d/%d/%d/%d/%d/%d, %.2lf, %.2lf, %.4lf, %.4lf, %.4lf, %.4lf, %.2lf, %.4lf, %.2lf, %.2lf\n", n, k, d, subsample, w, prek,
 		ans[0] / num, ans[1] / num, ans[2] / ans[10], ans[3] / (2*num), ans[4] / (2*num), ans[5] / (2*num), 
 		ans[6] / (2*num), ans[7] / (2*num), ans[8], ans[9]);
 
