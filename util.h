@@ -65,5 +65,6 @@ typedef std::unordered_map<int64_t, std::vector<seedinfo>> ssh_index;
 ssh_index* index_build(std::vector<seed>& seeds);
 void index_get(ssh_index* ht, std::vector<seed>& seeds, std::vector<seedmatch>& matches);
 void saveSeeds(const char* filename, int k, const std::vector<seed>& seeds);
+void saveSeedsPosotion(const char* filename, const std::vector<seed>& seeds);
 
 #endif //util.h

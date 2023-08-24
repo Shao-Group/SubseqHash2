@@ -87,3 +87,18 @@ void saveSeeds(const char* filename, int k, const std::vector<seed>& seeds)
 
     fclose(fout);
 }
+
+void saveSeedsPosotion(const char* filename, const std::vector<seed>& seeds)
+{
+    FILE* fout = fopen(filename, "wb");
+    uint64_t pos[2];//st, ed
+    for(auto s : seeds)
+    {
+		fwrite(&(s.str), sizeof(kmer), 1, fout);
+		pos[0] = s.st;
+		pos[1] = s.index;
+		fwrite(pos, sizeof(uint64_t), 2, fout);
+    }
+
+    fclose(fout);
+}

@@ -66,17 +66,11 @@ void subseq2strobeseeding::init(const char* table_filename)
     int x;
     int subsample = num_valid;
 
-    if((num_valid&1) && (k&1))
-    {
-    	subsample--;
-    	valid[k/2] = subsample+1;
-    }
-
-    for(int i = 0; i < k-2; i++)
+    for(int i = 0; i < k; i++)
     {
 		fscanf(filein, "%d", &x);
 		if(i < subsample)
-			valid[x+1] = i+1;
+			valid[x] = i+1;
     }
 }
 
@@ -136,7 +130,7 @@ void subseq2strobeseeding::DP(std::string s, size_t start, size_t end, DPCell* d
 		for(int i = 2; i <= interval_len; i++)
 		{
 		    int minj = std::max(1, i - del);
-		    int maxj = std::min(i, k - 2);
+		    int maxj = std::min(i, k - 1);
 
 		    for(int j = minj; j <= maxj; j++)
 		    {
@@ -304,7 +298,7 @@ void subseq2strobeseeding::revDP(std::string s, size_t start, size_t end, DPCell
 		for(int i = 2; i <= interval_len; i++)
 		{
 		    int minj = std::max(1, i - del);
-		    int maxj = std::min(i, k - 2);
+		    int maxj = std::min(i, k - 1);
 
 		    for(int j = minj; j <= maxj; j++)
 		    {
@@ -430,18 +424,64 @@ void subseq2strobeseeding::combine(std::string s, size_t start, size_t end, DPCe
 
     for(int st = 0; st + n - 1 < len; st++)
     {
-		for(int j = 1; j <= k - 2; j++)
+		for(int j = 0; j < k; j++)
 		{
 		    ans1[j] = -INF;
 		    ans2[j] = -1;
 		}
 
-		for(int i = 1; i < n-1; i++)
+		for(int i = 0; i < n; i++)
 		{
+		    int nt = alphabetIndex(s[start + i + st]); // mid nucleotide
+
+		    if(n - i >= k && valid[0])
+		    {
+				int d3 = C3[0][nt];
+				dp_index = dpIndex(st+i+1, n-i-1, k-1, (d-d3+d)%d);
+
+				if(dp[dp_index].f_min >= INF)
+					continue;
+
+				int64_t v = combine3[0][nt] * A3[0][nt];
+
+				if(combine1[0][nt] == 1)
+				    v += dp[dp_index].f_max;
+				else
+				    v -= dp[dp_index].f_min;
+
+				if(v > ans1[0])
+				{
+				    ans1[0] = v;
+				    ans2[0] = i;
+				    ans3[0] = (d-d3+d)%d;
+				}
+		    }
+
+		    if(i >= k && valid[n-1])
+		    {
+	    		int d3 = C3[n-1][nt];
+				dp_index2 = dpIndex(st+i-1, i, n-1, (d-d3+d)%d);
+
+				if(revdp[dp_index2].f_min >= INF)
+					continue;
+
+				int64_t v = combine3[n-1][nt] * A3[n-1][nt];
+
+				if(combine2[n-1][nt] == 1)
+				    v += revdp[dp_index2].f_max;
+				else
+				    v -= revdp[dp_index2].f_min;
+
+				if(v > ans1[n-1])
+				{
+				    ans1[n-1] = v;
+				    ans2[n-1] = i;
+				    ans3[n-1] = 0;
+				}
+			}
+
 		    int minj = std::max(1, i - del);
 		    int maxj = std::min(i, k - 2);
-
-		    int nt = alphabetIndex(s[start + i + st]); // mid nucleotide
 
 		    for(int j = minj; j <= maxj; j++)
 			if(valid[j])
@@ -477,7 +517,7 @@ void subseq2strobeseeding::combine(std::string s, size_t start, size_t end, DPCe
 			}
 		}	
 
-		for(int j = 1; j <= k - 2; j++)
+		for(int j = 0; j < k; j++)
 		{
 		    seed tmp;
 		    if(!valid[j])
@@ -506,92 +546,101 @@ void subseq2strobeseeding::combine(std::string s, size_t start, size_t end, DPCe
 		    if(combine2[j][nt] < 0)
 				z = 0;
 
-		    while(y > 0)
-		    {
-				dp_index = dpIndex(st+ans2[j]-1, x, y, d2);
-				if(z == 1)
-				{
-				    nextpos = start + st + ans2[j] - revdp[dp_index].g_max - 1;
-				    nextval = alphabetIndex(s[nextpos]);
+			if(j > 0)
+			{
+			    while(y > 0)
+			    {
+					dp_index = dpIndex(st+ans2[j]-1, x, y, d2);
+					if(z == 1)
+					{
+					    nextpos = start + st + ans2[j] - revdp[dp_index].g_max - 1;
+					    nextval = alphabetIndex(s[nextpos]);
 
-				    index.push_back(nextpos);
-				    hashval = (hashval<<2) | nextval;
+					    index.push_back(nextpos);
+					    hashval = (hashval<<2) | nextval;
 
-				    if(revB1[y-1][nextval][d2] == -1)
-						z = 0;
+					    if(revB1[y-1][nextval][d2] == -1)
+							z = 0;
 
-				    nextd = (d2 + d - C2[y-1][nextval]) % d;
-				    x = revdp[dp_index].g_max;
-				    y--;
-				    d2 = nextd;
-				}
-				else
-				{
-				    nextpos = start + st + ans2[j] - revdp[dp_index].g_min - 1;
-				    nextval = alphabetIndex(s[nextpos]);
+					    nextd = (d2 + d - C2[y-1][nextval]) % d;
+					    x = revdp[dp_index].g_max;
+					    y--;
+					    d2 = nextd;
+					}
+					else
+					{
+					    nextpos = start + st + ans2[j] - revdp[dp_index].g_min - 1;
+					    nextval = alphabetIndex(s[nextpos]);
 
-				    index.push_back(nextpos);
-				    hashval = (hashval<<2) | nextval;
+					    index.push_back(nextpos);
+					    hashval = (hashval<<2) | nextval;
 
-				    if(revB1[y-1][nextval][d2] == -1)
-						z = 1;
-							
-				    nextd = (d2 + d - C2[y-1][nextval]) % d;
-				    x = revdp[dp_index].g_min;
-				    y--;
-				    d2 = nextd;
-				}
-		    }
+					    if(revB1[y-1][nextval][d2] == -1)
+							z = 1;
+								
+					    nextd = (d2 + d - C2[y-1][nextval]) % d;
+					    x = revdp[dp_index].g_min;
+					    y--;
+					    d2 = nextd;
+					}
+			    }
+			}
 
 		    index.push_back(start + st + ans2[j]);
 		    hashval = (hashval<<2) | alphabetIndex(s[start + st + ans2[j]]);
 
-		    x = n - ans2[j] - 1;
-		    y = k - j - 1;
-
-		    z = 1;
-		    if(combine1[j][nt] < 0)
-				z = 0;
-
-		    //cout<<j<<" "<<ans1[j]<<" "<<ans2[j]<<endl;
-		    while(y > 0)
+		    if(j < n-1)
 		    {
-				dp_index = dpIndex(st+ans2[j]+1, x, y, d1);
-				if(z == 1)
-				{	
-				    nextpos = start + st + ans2[j] + dp[dp_index].g_max + 1;
-				    nextval = alphabetIndex(s[nextpos]);
+			    x = n - ans2[j] - 1;
+			    y = k - j - 1;
 
-				    tmp1.push_back(nextpos);
+			    z = 1;
+			    if(combine1[j][nt] < 0)
+					z = 0;
 
-				    if(B1[y-1][nextval][d1] == -1)
-						z = 0;
-							
-				    nextd = (d1 + d - C1[y-1][nextval]) % d;
-				    x = dp[dp_index].g_max;
-				    y--;
-				    d1 = nextd;
-				}
-				else
-				{								
-				    nextpos = start + st + ans2[j] + dp[dp_index].g_min + 1;
-				    nextval = alphabetIndex(s[nextpos]);
+			    //cout<<j<<" "<<ans1[j]<<" "<<ans2[j]<<endl;
+			    while(y > 0)
+			    {
+					dp_index = dpIndex(st+ans2[j]+1, x, y, d1);
+					if(z == 1)
+					{	
+					    nextpos = start + st + ans2[j] + dp[dp_index].g_max + 1;
+					    nextval = alphabetIndex(s[nextpos]);
 
-				    tmp1.push_back(nextpos);
+					    tmp1.push_back(nextpos);
 
-				    if(B1[y-1][nextval][d1] == -1)
-						z = 1;
-							
-				    nextd = (d1 + d - C1[y-1][nextval]) % d;
-				    x = dp[dp_index].g_min;
-				    y--;
-				    d1 = nextd;
-				}
-		    }
+					    if(B1[y-1][nextval][d1] == -1)
+							z = 0;
+								
+					    nextd = (d1 + d - C1[y-1][nextval]) % d;
+					    x = dp[dp_index].g_max;
+					    y--;
+					    d1 = nextd;
+					}
+					else
+					{								
+					    nextpos = start + st + ans2[j] + dp[dp_index].g_min + 1;
+					    nextval = alphabetIndex(s[nextpos]);
 
+					    tmp1.push_back(nextpos);
+
+					    if(B1[y-1][nextval][d1] == -1)
+							z = 1;
+								
+					    nextd = (d1 + d - C1[y-1][nextval]) % d;
+					    x = dp[dp_index].g_min;
+					    y--;
+					    d1 = nextd;
+					}
+			    }
+			}
 
 		    tmp.st = start + st;
-		    tmp.ed = tmp1[0];
+		    if(j < k-1)
+		    	tmp.ed = tmp1[0];
+			else
+				tmp.ed = index[k-1];
+
 		    tmp.index = 0;
 
 		    for(size_t a: index)
@@ -615,7 +664,7 @@ void subseq2strobeseeding::combine(std::string s, size_t start, size_t end, DPCe
 
     for(int st = 0; st + w * n + prek <= len; st++)
     {
-    	for(int j = 1; j <= k-2; j++)
+    	for(int j = 0; j < k; j++)
     		if(valid[j])
 	    	{
 	    		int num = valid[j] - 1;

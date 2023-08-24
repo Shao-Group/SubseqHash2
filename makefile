@@ -1,6 +1,6 @@
 CC=gcc
 CPP=g++
-CFLAGS+= -m64 -g -Wall -std=c++14
+CFLAGS+= -m64 -g -Wall -std=c++11
 LIBS=
 ALLDEP:= $(patsubst %.h,%.o,$(wildcard *.h)) ./strobemer/index.o
 

@@ -144,7 +144,7 @@ void init(int k, int d, string path)
 	
 	vector<int> samples, sampledpos; //priority of positions in subsampling
 
-    int sample_size = k-2;
+    int sample_size = k;
     int half = sample_size>>1;
     for(int j=0; j<half; ++j)
 		samples.push_back(j);
@@ -155,7 +155,7 @@ void init(int k, int d, string path)
     for(int j=0; j<half; ++j)
     {
 		sampledpos.push_back(samples[j]);
-		sampledpos.push_back(k-3-samples[j]);
+		sampledpos.push_back(k-1-samples[j]);
     }
 	
 	if(k&1)
