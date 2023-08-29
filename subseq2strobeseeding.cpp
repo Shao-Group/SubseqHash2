@@ -457,26 +457,26 @@ void subseq2strobeseeding::combine(std::string s, size_t start, size_t end, DPCe
 				}
 		    }
 
-		    if(i >= k && valid[n-1])
+		    if(i >= k && valid[k-1])
 		    {
-	    		int d3 = C3[n-1][nt];
-				dp_index2 = dpIndex(st+i-1, i, n-1, (d-d3+d)%d);
+	    		int d3 = C3[k-1][nt];
+				dp_index2 = dpIndex(st+i-1, i, k-1, (d-d3+d)%d);
 
 				if(revdp[dp_index2].f_min >= INF)
 					continue;
 
-				int64_t v = combine3[n-1][nt] * A3[n-1][nt];
+				int64_t v = combine3[k-1][nt] * A3[k-1][nt];
 
-				if(combine2[n-1][nt] == 1)
+				if(combine2[k-1][nt] == 1)
 				    v += revdp[dp_index2].f_max;
 				else
 				    v -= revdp[dp_index2].f_min;
 
 				if(v > ans1[n-1])
 				{
-				    ans1[n-1] = v;
-				    ans2[n-1] = i;
-				    ans3[n-1] = 0;
+				    ans1[k-1] = v;
+				    ans2[k-1] = i;
+				    ans3[k-1] = 0;
 				}
 			}
 
@@ -589,7 +589,7 @@ void subseq2strobeseeding::combine(std::string s, size_t start, size_t end, DPCe
 		    index.push_back(start + st + ans2[j]);
 		    hashval = (hashval<<2) | alphabetIndex(s[start + st + ans2[j]]);
 
-		    if(j < n-1)
+		    if(j < k-1)
 		    {
 			    x = n - ans2[j] - 1;
 			    y = k - j - 1;

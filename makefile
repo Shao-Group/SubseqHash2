@@ -20,7 +20,7 @@ test%.out: test%.cpp $(ALLDEP)
 test2%.out: test%.cpp $(ALLDEP)
 	$(CPP) $(CFLAGS) -o $@ $^ $(LIBS) -pthread
 
-strobemer: ./strobemer/index.cpp
+strobemer/index.o: ./strobemer/index.cpp
 	$(CPP) $(CFLAGS) -MMD -c ./strobemer/index.cpp -o ./strobemer/index.o
 
 %.out: %.cpp $(ALLDEP)
