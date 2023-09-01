@@ -241,7 +241,7 @@ void subseqhash1seeding::DP(std::string s, DPCell* dp, int* h, std::vector<seed>
 	    tmp.ed = index[0];
 
 	    for(size_t a: index)
-	    	tmp.index |= 1<<(a - tmp.st);
+	    	tmp.index |= ((uint64_t)1)<<(a - tmp.st);
 
 	    if(seeds.size() > 0 && tmp.hashval == seeds.back().hashval)
 	    {

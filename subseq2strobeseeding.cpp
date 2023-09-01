@@ -644,11 +644,11 @@ void subseq2strobeseeding::combine(std::string s, size_t start, size_t end, DPCe
 		    tmp.index = 0;
 
 		    for(size_t a: index)
-		    	tmp.index |= 1<<(a - tmp.st);
+		    	tmp.index |= ((uint64_t)1)<<(a - tmp.st);
 
 		    for(int a = k - j - 2; a >= 0; a--)
 		    {
-		    	tmp.index |= 1<<(tmp1[a] - tmp.st);			
+		    	tmp.index |= ((uint64_t)1)<<(tmp1[a] - tmp.st);			
 				hashval = (hashval<<2) | alphabetIndex(s[tmp1[a]]);
 		    }
 
@@ -679,7 +679,7 @@ void subseq2strobeseeding::combine(std::string s, size_t start, size_t end, DPCe
 
 	    		tmp.ed = seedtmp[num][st + prek + (w-1) * n].ed;
 
-	    		tmp.index = ((1<<prek) - 1);
+	    		tmp.index = (((uint64_t)1)<<prek) - 1;
 	    		for(int window = 0; window < w; window++)
 	    			tmp.index |= (seedtmp[num][st + prek + window * n].index << (prek + window * n));
 

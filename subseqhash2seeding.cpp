@@ -1,6 +1,6 @@
 #include "subseqhash2seeding.h"
 
-const int64_t INF=(int64_t)1<<62;
+const int64_t INF=((int64_t)1)<<62;
 
 //accessing DPCell[chunk_size][n+1][k+1][d]
 inline int subseqhash2seeding::dpIndex(int d1, int d2, int d3, int d4)
@@ -635,16 +635,21 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
 			}
 
 		    tmp.st = index[0];
+		    tmp.index = 0;
 		    if(j < k-1)
 		    	tmp.ed = tmp1[0];
 			else
 				tmp.ed = index[k-1];
 		    
+		    
 		    for(size_t a: index)
-		    	tmp.index |= 1<<(a - tmp.st);
+		    {
+		    	tmp.index |= (((uint64_t)1)<<(a - tmp.st));
+		    }
+
 		    for(int a = k - j - 2; a >= 0; a--)
 		    {
-		    	tmp.index |= 1<<(tmp1[a] - tmp.st);			
+		    	tmp.index |= (((uint64_t)1)<<(tmp1[a] - tmp.st));
 				hashval = (hashval<<2) | alphabetIndex(s[tmp1[a]]);
 		    }
 
@@ -666,7 +671,8 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
 					}
 		    }
 
-		    //printf("%d %d %d %d %lld\n", j, num, tmp.st, tmp.ed, tmp.index);
+		    // if(tmp.index > ((uint64_t)1<<n))
+		    // 	printf("%d %d %d %d %llu\n", j, num, tmp.st, tmp.ed, tmp.index);
 			tmp.hashval = ans1[j];
 		    tmp.str = hashval;
 		    tmp.str_rc = revComp(hashval, k);

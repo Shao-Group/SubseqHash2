@@ -239,7 +239,6 @@ int main(int argc, const char * argv[])
 						tmp.ed--;
 					}
 				
-				//cout<<tmp.hashval<<" "<<tmp.st<<" "<<tmp.ed<<" "<<tmp.index<<endl;
 				seedt.push_back(tmp);
 			}				    
 	

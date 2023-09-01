@@ -47,6 +47,7 @@ int main(int argc, const char * argv[])
 	ifstream refin("./reads/" + species);
 	string info, refseq;
     uint64_t tmp = 0;
+    int num = 0;
 
 	while(getline(refin, refseq))
 	{
@@ -64,7 +65,6 @@ int main(int argc, const char * argv[])
 		    uint64_t pos[2];//st, index
 		    for(auto s : seeds[i])
 		    {
-		   // cout<<s.hashval<<" "<<s.st<<" "<<s.ed<<" "<<s.index<<endl;
 				fwrite(&(s.hashval), sizeof(int64_t), 1, fout[i]);
 				pos[0] = s.st;
 				pos[1] = s.index;
@@ -76,6 +76,8 @@ int main(int argc, const char * argv[])
 			pos[1] = 0;
 			fwrite(pos, sizeof(uint64_t), 2, fout[i]);
 		}
+
+		num++;
 	}
 
     return 0;
