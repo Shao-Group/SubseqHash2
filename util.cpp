@@ -88,17 +88,56 @@ void saveSeeds(const char* filename, int k, const std::vector<seed>& seeds)
     fclose(fout);
 }
 
-void saveSeedsPosotion(const char* filename, const std::vector<seed>& seeds)
+void saveSeedsPosition(const char* filename, const std::vector<seed>& seeds)
 {
     FILE* fout = fopen(filename, "wb");
     uint64_t pos[2];//st, ed
     for(auto s : seeds)
     {
-		fwrite(&(s.str), sizeof(kmer), 1, fout);
+		fwrite(&(s.hashval), sizeof(int64_t), 1, fout);
 		pos[0] = s.st;
 		pos[1] = s.index;
 		fwrite(pos, sizeof(uint64_t), 2, fout);
     }
 
     fclose(fout);
+}
+
+void loadSeeds(const char* filename, std::vector<seed> &seeds)
+{
+    FILE* fin = fopen(filename, "rb");
+    size_t ret = 1;
+    uint64_t st, index;
+	int64_t hashval;
+
+    while(ret == 1)
+    {
+		ret = fread(&hashval, sizeof(uint64_t), 1, fin);
+		fread(&st, sizeof(uint64_t), 1, fin);
+		fread(&index, sizeof(uint64_t), 1, fin);
+
+		if(!ret)
+			break;
+		seed tmp;
+		tmp.hashval = hashval;
+		tmp.st = st;
+		tmp.index = index;
+		
+		uint64_t j = ((uint64_t)1)<<63;
+		tmp.ed = st + 63;
+		while(j)
+			if(index & j)
+				break;
+			else
+			{
+				j >>= 1;
+				tmp.ed--;
+			}
+
+		seeds.push_back(tmp);
+    }
+    if(ferror(fin)){
+	fprintf(stderr, "Error reading %s\n", filename);
+    }
+    fclose(fin);
 }

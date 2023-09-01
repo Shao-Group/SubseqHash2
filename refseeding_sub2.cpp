@@ -50,7 +50,7 @@ int main(int argc, const char * argv[])
 		for(int i = 0; i < subsample; i++)
 		{		
 			string path = "./refsub2/" + species + "/" + info + "_" + to_string(n) + "_" + to_string(k) + "_" + to_string(d) + "_" + to_string(i);
-			saveSeedsPosotion(path.c_str(), seeds[i]);
+			saveSeedsPosition(path.c_str(), seeds[i]);
 		}
 	}
 
