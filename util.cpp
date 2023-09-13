@@ -76,16 +76,48 @@ void saveSeeds(const char* filename, int k, const std::vector<seed>& seeds)
 {
     FILE* fout = fopen(filename, "wb");
     fwrite(&k, sizeof(k), 1, fout);
-    int pos[2];//st, ed
+    uint64_t pos[2];//st, index
     for(auto s : seeds)
     {
-		fwrite(&(s.str), sizeof(kmer), 1, fout);
-		pos[0] = s.st;
-		pos[1] = s.ed;
-		fwrite(pos, sizeof(int), 2, fout);
+	    if(s.str < s.str_rc){
+		    fwrite(&(s.str), sizeof(s.str), 1, fout);
+	    }else{
+		    fwrite(&(s.str_rc), sizeof(s.str_rc), 1, fout);
+	    }
+	    pos[0] = s.st;
+	    pos[1] = s.index;
+	    fwrite(pos, sizeof(s.index), 2, fout);
     }
 
     fclose(fout);
+}
+
+void loadSeedsUnordered(const char* filename, const size_t read_id,
+		std::unordered_map<kmer, std::vector<size_t>, kmerHash> &all_seeds){
+	FILE* fin = fopen(filename, "rb");
+	size_t ret;
+	kmer s;
+	int k;
+	ret = fread(&k, sizeof(k), 1, fin);
+	while(true){
+		ret = fread(&s, sizeof(s), 1, fin);
+		if(ret != 1) break;
+		//location info is not used for now
+		fseek(fin, sizeof(uint64_t)<<1, SEEK_CUR);
+
+		auto result = all_seeds.emplace(std::piecewise_construct,
+				std::forward_as_tuple(s),
+				std::forward_as_tuple(1, read_id));
+
+		//each seed is only added once for a read
+		if(result.second == false && result.first->second.back() < read_id){
+			result.first->second.push_back(read_id);
+		}
+	}
+	if(ferror(fin)){
+		fprintf(stderr, "Error reading %s\n", filename);
+	}
+	fclose(fin);
 }
 
 void saveSeedsPosition(const char* filename, const std::vector<seed>& seeds)
