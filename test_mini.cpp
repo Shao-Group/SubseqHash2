@@ -10,7 +10,7 @@ int k, w;
 
 double ans[20] = {0}; //Number of matches, Number of true-matches, precision of seed-matches, sequence cover, false sequence cover, matching cover, island(sc), density
 //seeding time, seed-match time 
-const int maxlen = 1<<20;
+const int maxlen = 1<<27;
 
 vector<seedmatch> matches;
 

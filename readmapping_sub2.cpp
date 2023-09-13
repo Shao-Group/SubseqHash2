@@ -209,7 +209,6 @@ int main(int argc, const char * argv[])
 		    vector<seed> seedt;
 		   	size_t ret = 1;
 
-		   	//cout<<i<<" "<<j<<endl;
 		    while(ret == 1)
 		    {
 				ret = fread(&hashval, sizeof(int64_t), 1, fin);
@@ -235,7 +234,8 @@ int main(int argc, const char * argv[])
 						high1 >>= 1;
 						tmp.ed--;
 					}
-				
+
+
 				seedt.push_back(tmp);
 			}				    
 	
@@ -266,7 +266,7 @@ int main(int argc, const char * argv[])
 							tmp.ed--;
 						}
 					
-					//cout<<tmp.hashval<<" "<<tmp.st<<" "<<tmp.ed<<" "<<tmp.index<<endl;
+					// cout<<tmp.hashval<<" "<<tmp.st<<" "<<tmp.ed<<" "<<tmp.index<<endl;
 					//seedt.push_back(tmp);
 				}	
 

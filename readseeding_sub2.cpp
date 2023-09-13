@@ -74,7 +74,7 @@ int main(int argc, const char * argv[])
 		    }			
 
 		    fwrite(&(tmp), sizeof(uint64_t), 1, fout[i]);
-		    fwrite(&(zkmer), sizeof(uint64_t), 1, fout[i]);
+		    fwrite(&(zkmer), sizeof(kmer), 1, fout[i]);
 			pos[0] = 0;
 			pos[1] = 0;
 			fwrite(pos, sizeof(uint64_t), 2, fout[i]);
