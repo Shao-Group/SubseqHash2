@@ -182,9 +182,9 @@ void subseqhash1seeding::DP(std::string s, DPCell* dp, int* h, std::vector<seed>
 			if(h[dp_index + i] == st + 1)
 			{
 				if(fabs(dp[dp_index + i].f_min) > dp[dp_index + i].f_max)
-					tmp.hashval = dp[dp_index + i].f_min;
+					tmp.hashval = uint64_t(dp[dp_index + i].f_min * 32768);
 				else
-					tmp.hashval = dp[dp_index + i].f_max;
+					tmp.hashval = uint64_t(dp[dp_index + i].f_max * 32768);
 
 				mod = i;
 				break;

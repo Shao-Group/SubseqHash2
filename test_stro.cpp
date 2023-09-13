@@ -220,7 +220,7 @@ int main(int argc, const char * argv[])
 		pseudo_match(seq, seq2, align, seeding);
 		num++;
 	}	
-	printf("%d/%d/%d/%d, %.2lf, %.2lf, %.4lf, %.4lf, %.4lf, %.4lf, %.2lf, %.4lf, %.2lf, %.2lf\n", k, w, w_min, w_max,
+	printf("%d/%d/%d/%d/%d, %.2lf, %.2lf, %.4lf, %.4lf, %.4lf, %.4lf, %.2lf, %.4lf, %.2lf, %.2lf\n", k, w, w_min, w_max, seednum,
 		ans[0] / num, ans[1] / num, ans[2] / ans[10], ans[3] / (2*num), ans[4] / (2*num), ans[5] / (2*num), 
 		ans[6] / (2*num), ans[7] / (2*num), ans[8], ans[9]);
 

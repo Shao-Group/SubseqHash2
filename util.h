@@ -66,6 +66,8 @@ ssh_index* index_build(std::vector<seed>& seeds);
 void index_get(ssh_index* ht, std::vector<seed>& seeds, std::vector<seedmatch>& matches);
 void saveSeeds(const char* filename, int k, const std::vector<seed>& seeds);
 void saveSeedsPosition(const char* filename, const std::vector<seed>& seeds);
+void saveSeedsStrPosition(const char* filename, const std::vector<seed>& seeds);
 void loadSeeds(const char* filename, std::vector<seed> &seeds);
+void loadSeedsStr(const char* filename, std::vector<seed> &seeds);
 
 #endif //util.h
