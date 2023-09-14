@@ -231,12 +231,22 @@ void init(int k, int d, string path)
 	fprintf(file, "\n");
 	fprintf(file, "\n");
 
-	for(int i = 0; i < (k+1)/2; i++)
+	for(int i = 0; i < k/2; i++)
 	{
 		for(int j = 0; j < 4; j++)
 			fprintf(file, "%d,%d\t", combine1[i][j], combine2[i][j]);
 		fprintf(file, "\n");
 	}	
+
+	if(k&1)
+	{
+		fprintf(file, "%d,%d\t", combine1[k/2][0], combine2[k/2][0]);
+		fprintf(file, "%d,%d\t", combine1[k/2][1], combine2[k/2][1]);
+		fprintf(file, "%d,%d\t", combine2[k/2][1], combine1[k/2][1]);
+		fprintf(file, "%d,%d\t", combine2[k/2][0], combine1[k/2][0]);
+		fprintf(file, "\n");		
+	}
+
 	for(int i = (k+1)/2; i < k; i++)
 	{
 		for(int j = 0; j < 4; j++)
@@ -246,12 +256,22 @@ void init(int k, int d, string path)
 	fprintf(file, "\n");
 	fprintf(file, "\n");
 
-	for(int i = 0; i < (k+1)/2; i++)
+	for(int i = 0; i < k/2; i++)
 	{
 		for(int j = 0; j < 4; j++)
 			fprintf(file, "%" PRId64 " ", A3[i][j]);
 		fprintf(file, "\n");
 	}
+
+	if(k&1)
+	{
+		fprintf(file, "%" PRId64 " ", A3[k/2][0]);
+		fprintf(file, "%" PRId64 " ", A3[k/2][1]);
+		fprintf(file, "%" PRId64 " ", A3[k/2][1]);
+		fprintf(file, "%" PRId64 " ", A3[k/2][0]);
+		fprintf(file, "\n");		
+	}
+
 	for(int i = (k+1)/2; i < k; i++)
 	{
 		for(int j = 0; j < 4; j++)
@@ -260,12 +280,20 @@ void init(int k, int d, string path)
 	}
 	fprintf(file, "\n");
 
-	for(int i = 0; i < (k+1)/2; i++)
+	for(int i = 0; i < k/2; i++)
 	{
 		for(int j = 0; j < 4; j++)
 			fprintf(file, "%d\t", combine3[i][j]);
 		fprintf(file, "\n");
-	}	
+	}		
+	if(k&1)
+	{
+		fprintf(file, "%d\t", combine3[k/2][0]);
+		fprintf(file, "%d\t", combine3[k/2][1]);
+		fprintf(file, "%d\t", combine3[k/2][1]);
+		fprintf(file, "%d\t", combine3[k/2][0]);
+		fprintf(file, "\n");		
+	}
 	for(int i = (k+1)/2; i < k; i++)
 	{
 		for(int j = 0; j < 4; j++)
@@ -274,11 +302,19 @@ void init(int k, int d, string path)
 	}	
 	fprintf(file, "\n");
 
-	for(int i = 0; i < (k+1)/2; i++)
+	for(int i = 0; i < k/2; i++)
 	{
 		for(int j = 0; j < 4; j++)
 			fprintf(file, "%d ", C3[i][j]);
 		fprintf(file, "\n");
+	}
+	if(k&1)
+	{
+		fprintf(file, "%d ", C3[k/2][0]);
+		fprintf(file, "%d ", C3[k/2][1]);
+		fprintf(file, "%d ", C3[k/2][1]);
+		fprintf(file, "%d ", C3[k/2][0]);
+		fprintf(file, "\n");		
 	}
 	for(int i = (k+1)/2; i < k; i++)
 	{

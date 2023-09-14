@@ -25,7 +25,7 @@ vector<bool> mcover2(maxlen, 0);
 vector<bool> fscover(maxlen, 0);
 vector<bool> fscover2(maxlen, 0);
 
-void pseudo_match(string s, vector<int> &align, string name, strobemerseeding seeding, strobemerseeding revseeding)
+void pseudo_match(string s, vector<int> &align, string name, strobemerseeding seeding)
 {
 	int lens = s.length();
 
@@ -51,7 +51,7 @@ void pseudo_match(string s, vector<int> &align, string name, strobemerseeding se
     for(int j = 0; j < refnum; j++)
     if(refname[j] == name)
     {
-    	for(int r = 0; r < ((seednum+1) >> 1); r++)
+    	for(int r = 0; r < seednum; r++)
     	{
 			start = clock();
 
@@ -105,7 +105,7 @@ void pseudo_match(string s, vector<int> &align, string name, strobemerseeding se
 	}
 	else
 	{	
-    	for(int r = 0; r < ((seednum+1) >> 1); r++)
+    	for(int r = 0; r < seednum; r++)
 		{
 			start = clock();
 			matches.clear();
@@ -132,24 +132,23 @@ void pseudo_match(string s, vector<int> &align, string name, strobemerseeding se
 	for(int i = 0; i < lens; i++)
 		s[i] = ALPHABET[3-alphabetIndex(s[i])];
 
-    int fh = (seednum+1) >> 1;
-	for(int i = 0; i < fh; i++)
+	for(int i = 0; i < seednum; i++)
 		seeds[i].clear();
 
     start = clock();
-	revseeding.get_strobemers(s, seeds);
+	seeding.get_strobemers(s, seeds);
     end = clock();
     ans[8] += (double)(end-start)/CLOCKS_PER_SEC;
     
     for(int j = 0; j < refnum; j++)
     if(refname[j] == name)
     {
-    	for(int r = 0; r < (seednum >> 1); r++)
+    	for(int r = 0; r < seednum; r++)
     	{
 			start = clock();
 
 			matches.clear();
-			index_get(refindex[j][fh+r], seeds[r], matches);
+			index_get(refindex[j][r], seeds[r], matches);
 
 			end = clock();
 			ans[9] += (double)(end-start)/CLOCKS_PER_SEC;
@@ -199,11 +198,11 @@ void pseudo_match(string s, vector<int> &align, string name, strobemerseeding se
 	}
 	else
 	{	
-    	for(int r = 0; r < (seednum >> 1); r++)
+    	for(int r = 0; r < seednum; r++)
 		{
 			start = clock();
 			matches.clear();
-			index_get(refindex[j][fh + r], seeds[r], matches);
+			index_get(refindex[j][r], seeds[r], matches);
 			end = clock();
 			ans[9] += (double)(end-start)/CLOCKS_PER_SEC;
 
@@ -272,8 +271,7 @@ int main(int argc, const char * argv[])
     w_max = atoi(argv[4]);
     seednum = atoi(argv[5]);
 
-	strobemerseeding seeding(k, w, w_min, w_max, (seednum+1)>>1);
-	strobemerseeding revseeding(k, w, w_min, w_max, seednum>>1);
+	strobemerseeding seeding(k, w, w_min, w_max, seednum);
 
 	string species = argv[6];
 
@@ -285,15 +283,9 @@ int main(int argc, const char * argv[])
 	{
 		getline(refin, refseq);
 
-		vector<vector<seed>> seeds ((seednum+1)>>1);
+		vector<vector<seed>> seeds (seednum);
 		seeding.get_strobemers(refseq, seeds);
 		seedu.push_back(seeds);
-
-		vector<vector<seed>> seedt (seednum>>1);
-		revseeding.get_strobemers(refseq, seedt);
-
-		for(int i = 0; i < (seednum>>1); i++)
-			seedu[refnum].push_back(seedt[i]);
 
 		info = info.substr(1, info.find(' ') - 1);
 
@@ -324,7 +316,7 @@ int main(int argc, const char * argv[])
 			align.push_back(x);
 		}
 
-		pseudo_match(refseq, align, info, seeding, revseeding);
+		pseudo_match(refseq, align, info, seeding);
 		num++;
 	}	
 	

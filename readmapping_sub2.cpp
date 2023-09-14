@@ -33,15 +33,24 @@ void pseudo_match(int len, int readnum, int refno, vector<seed> &seedt, vector<i
 	index_get(refindex[refno], seedt, matches);
 
 	uint64_t x1;
-
 	int truematches = 0;
 
 	totalmatches += matches.size();
 	for(seedmatch m: matches)
 	{
 		int tp = 0;
-		if(m.s1->str != m.s2->str)
+
+		// if(m.s2->st >= 20 && m.s2->st <= 25)
+		// {
+		// 				cout<<m.s2->st<<" "<<m.s2->ed<<endl;
+		// 	cout<<m.s1->st<<" "<<m.s1->ed<<" "<<align[m.s2->st]<<" "<<align[m.s2->ed]<<endl;
+		// }
+
+		if(m.s1->str != m.s2->str && m.s1->str != m.s2->str_rc)
+		{
+			totalmatches--;
 			continue;
+		}
 
 		for(int i = 0; i < n; i++)
 			if((m.s2->index>>i) & 1)
@@ -54,20 +63,29 @@ void pseudo_match(int len, int readnum, int refno, vector<seed> &seedt, vector<i
 		if(2 * tp >= k)
 		{
 			truematches++;	
+			//cout<<m.s2->st<<" "<<m.s2->ed<<endl;
 			for(int i = 0; i < n; i++)
 				if((m.s2->index>>i) & 1)
+				{
+					///cout<<m.s2->st + i<<" ";
 					scover[readnum][m.s2->st + i] = 1;
+				}
+			//cout<<endl;
 
 			for(int i = m.s2->st; i <= m.s2->ed; i++)
 				mcover[readnum][i] = 1;
 		}
 		else
-		{			
+		{	
+			// cout<<m.s2->st<<" "<<m.s2->ed<<endl;
+		 // 	cout<<m.s1->st<<" "<<m.s1->ed<<" "<<align[m.s2->st]<<" "<<align[m.s2->ed]<<endl;
 			for(int i = 0; i < n; i++)
 				if((m.s2->index>>i) & 1)
 					fscover[readnum][m.s2->st + i] = 1;
 		}
 	}
+
+	// cout<<truematches<<" "<<totalmatches<<endl;
 
 	matches.clear(); //match to other chromosome
 	for(int j = 0; j < refnum; j++)
@@ -76,7 +94,13 @@ void pseudo_match(int len, int readnum, int refno, vector<seed> &seedt, vector<i
 
 	totalmatches += matches.size();
 	for(seedmatch m: matches)
-	{
+	{		
+		if(m.s1->str != m.s2->str && m.s1->str != m.s2->str_rc)
+		{
+			totalmatches--;
+			continue;
+		}
+
 		for(int i = 0; i < n; i++)
 			if((m.s2->index>>i) & 1)
 				fscover[readnum][m.s2->st + i] = 1;
@@ -176,7 +200,7 @@ int main(int argc, const char * argv[])
 
 		num++;
 	}	
-
+	//	int i = subsample;
 	for(int i = 0; i < subsample; i++)
 	{
 		for(int j = 0; j < refnum; j++)
@@ -184,8 +208,9 @@ int main(int argc, const char * argv[])
 			string refpath = "./refsub2/" + species + "/" + refname[j] + "_" + to_string(n) + "_" + to_string(k) + "_" + to_string(d) + "_" + to_string(i);
 
 			seeds[j].clear();
-			loadSeedsStr(refpath.c_str(), seeds[j]);
+			loadSeedsStr(refpath.c_str(), seeds[j], k);
 		}
+
 
 		for(int j = 0; j < refnum; j++)
 		{
@@ -223,6 +248,7 @@ int main(int argc, const char * argv[])
 				tmp.st = st;
 				tmp.index = index;		
 				tmp.str = kk;
+				tmp.str_rc = revComp(kk, k);
 
 				uint64_t high1 = ((uint64_t)1)<<63;
 				tmp.ed = st + 63;
@@ -243,7 +269,7 @@ int main(int argc, const char * argv[])
 			    while(ret == 1)
 			    {
 					ret = fread(&hashval, sizeof(int64_t), 1, fin_rc);
-					fread(&kk, sizeof(kmer), 1, fin);
+					fread(&kk, sizeof(kmer), 1, fin_rc);
 					fread(&st, sizeof(uint64_t), 1, fin_rc);
 					fread(&index, sizeof(uint64_t), 1, fin_rc);
 
@@ -254,6 +280,7 @@ int main(int argc, const char * argv[])
 					tmp.st = st;
 					tmp.index = index;		
 					tmp.str = kk;
+					tmp.str_rc = revComp(kk, k);
 
 					uint64_t high1 = ((uint64_t)1)<<63;
 					tmp.ed = st + 63;
@@ -267,7 +294,7 @@ int main(int argc, const char * argv[])
 						}
 					
 					// cout<<tmp.hashval<<" "<<tmp.st<<" "<<tmp.ed<<" "<<tmp.index<<endl;
-					//seedt.push_back(tmp);
+					seedt.push_back(tmp);
 				}	
 
 			for(int l = 0; l < refnum; l++)

@@ -68,6 +68,6 @@ void saveSeeds(const char* filename, int k, const std::vector<seed>& seeds);
 void saveSeedsPosition(const char* filename, const std::vector<seed>& seeds);
 void saveSeedsStrPosition(const char* filename, const std::vector<seed>& seeds);
 void loadSeeds(const char* filename, std::vector<seed> &seeds);
-void loadSeedsStr(const char* filename, std::vector<seed> &seeds);
+void loadSeedsStr(const char* filename, std::vector<seed> &seeds, int k);
 
 #endif //util.h

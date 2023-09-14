@@ -158,7 +158,7 @@ void loadSeeds(const char* filename, std::vector<seed> &seeds)
     fclose(fin);
 }
 
-void loadSeedsStr(const char* filename, std::vector<seed> &seeds)
+void loadSeedsStr(const char* filename, std::vector<seed> &seeds, int k)
 {
     FILE* fin = fopen(filename, "rb");
     size_t ret = 1;
@@ -178,6 +178,7 @@ void loadSeedsStr(const char* filename, std::vector<seed> &seeds)
 		seed tmp;
 
 		tmp.str = kk;
+		tmp.str_rc = revComp(kk, k);
 		tmp.hashval = hashval;
 		tmp.st = st;
 		tmp.index = index;
