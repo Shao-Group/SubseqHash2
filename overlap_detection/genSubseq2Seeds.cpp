@@ -37,7 +37,7 @@ int main(int argc, const char * argv[]){
     
     {
 	seedFactory factory(output_dir, dir_len,
-			    n, k, d, n, argv[5]);
+			    n, k, d, k, argv[5]);
 
 	mkdir(output_dir, 0744);
 

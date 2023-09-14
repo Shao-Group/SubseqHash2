@@ -15,6 +15,13 @@
 
 typedef __uint128_t kmer;
 
+struct kmerHash{
+	std::size_t operator()(const kmer& x) const{
+		return std::hash<uint64_t>()((uint64_t)(x>>64)) ^
+			(std::hash<uint64_t>()((uint64_t)x) << 1);
+	}
+};
+
 #define ALPHABETSIZE 4
 const char ALPHABET[ALPHABETSIZE] = {'A', 'C', 'G', 'T'};
 static inline int alphabetIndex(char c)
@@ -64,7 +71,18 @@ typedef std::unordered_map<int64_t, std::vector<seedinfo>> ssh_index;
 
 ssh_index* index_build(std::vector<seed>& seeds);
 void index_get(ssh_index* ht, std::vector<seed>& seeds, std::vector<seedmatch>& matches);
+/*
+ * For seedfactory and overlap_detection, save the smaller of the subseq and its rev comp,
+ * st and index are saved but not used.
+ */
 void saveSeeds(const char* filename, int k, const std::vector<seed>& seeds);
+/*
+ * For seedfactory and overlap_detection, only keep one copy of each unique subseq for
+ * each read, st and index are not used.
+ */
+void loadSeedsUnordered(const char* filename, const size_t read_id,
+                std::unordered_map<kmer, std::vector<size_t>, kmerHash> &all_seeds);
+
 void saveSeedsPosition(const char* filename, const std::vector<seed>& seeds);
 void saveSeedsStrPosition(const char* filename, const std::vector<seed>& seeds);
 void loadSeeds(const char* filename, std::vector<seed> &seeds);
