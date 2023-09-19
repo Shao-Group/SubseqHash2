@@ -427,6 +427,7 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
     int64_t ans1[MAXK];
     int ans2[MAXK];
     int ans3[MAXK];
+    int ans4[MAXK];
 
     for(int st = 0; st + n - 1 < len; st++)
     {
@@ -434,6 +435,7 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
 		{
 		    ans1[j] = -INF;
 		    ans2[j] = -1;
+		    ans4[j] = d;
 		}
 
 		for(int i = 0; i < n; i++)
@@ -443,10 +445,17 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
 		    if(n - i >= k && valid[0])
 		    {
 				int d3 = C3[0][nt];
-				dp_index = dpIndex(st+i+1, n-i-1, k-1, (d-d3+d)%d);
+				int d1 = (d-d3+d)%d;
+				dp_index = dpIndex(st+i+1, n-i-1, k-1, d1);
 
-				if(dp[dp_index].f_min >= INF)
-					continue;
+				//if(dp[dp_index].f_min >= INF)
+				//	continue;
+
+				while(dp[dp_index].f_min >= INF)
+				{	
+					d1 = (d1+1) % d;
+					dp_index = dpIndex(st+i+1, n-i-1, k-1, d1);
+				}
 
 				int64_t v = combine3[0][nt] * A3[0][nt];
 
@@ -455,21 +464,30 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
 				else
 				    v -= dp[dp_index].f_min;
 
-				if(v > ans1[0])
+				if((v > ans1[0] && (d1+d3) % d == ans4[0]) || (d1+d3) % d < ans4[0])
 				{
 				    ans1[0] = v;
 				    ans2[0] = i;
-				    ans3[0] = (d-d3+d)%d;
+				   //ans3[0] = (d-d3+d)%d;
+					ans3[0] = d1;
+					ans4[0] = (d1+d3) % d; //omega, position, j, psi
 				}
 		    }
 
 		    if(i >= k && valid[k-1])
 		    {
 	    		int d3 = C3[k-1][nt];
-				dp_index2 = dpIndex(st+i-1, i, k-1, (d-d3+d)%d);
+	    		int d1 = (d-d3+d)%d;
+				dp_index2 = dpIndex(st+i-1, i, k-1, d1);
 
-				if(revdp[dp_index2].f_min >= INF)
-					continue;
+				//if(revdp[dp_index2].f_min >= INF)
+					//continue;
+
+				while(revdp[dp_index2].f_min >= INF)
+				{	
+					d1 = (d1+1) % d;
+					dp_index2 = dpIndex(st+i-1, i, k-1, d1);
+				}			
 
 				int64_t v = combine3[k-1][nt] * A3[k-1][nt];
 
@@ -478,11 +496,12 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
 				else
 				    v -= revdp[dp_index2].f_min;
 
-				if(v > ans1[k-1])
+				if((v > ans1[k-1] && (d1+d3) % d == ans4[k-1]) || (d1+d3) % d < ans4[k-1])
 				{
 				    ans1[k-1] = v;
 				    ans2[k-1] = i;
 				    ans3[k-1] = 0;
+					ans4[k-1] = (d1+d3) % d;
 				}
 			}
 
@@ -492,11 +511,33 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
 		    for(int j = minj; j <= maxj; j++)
 			if(valid[j])
 			{
+				dp_index = dpIndex(st+i+1, n-i-1, k-j-1, 0);
+				dp_index2 = dpIndex(st+i-1, i, j, 0);
+				int d2num = 0, totald = 0;
+
+				for(int q = 0; q < d; q++)
+					if(revdp[dp_index2 + q].f_min < INF)
+						d2num += (1<<q);
+
+				for(int q = 0; q < d; q++)
+					if(dp[dp_index + q].f_min < INF)
+						totald |= (d2num<<q);
+
+				int targetd = 0;
+				int d3 = C3[j][nt], d1 = (d - d3) % d;
+
+				while(targetd < d)
+				{
+					if(((totald>>d1)&1) || ((totald>>(d1+d)&1)))
+						break;
+					d1 = (d1+1) % d;
+					targetd++;
+				}
+
 			    for(int q = 0; q < d; q++)
 			    {
-					int d3 = C3[j][nt];
 					dp_index = dpIndex(st+i+1, n-i-1, k-j-1, q);
-					dp_index2 = dpIndex(st+i-1, i, j, (d-d3-q+d)%d);
+					dp_index2 = dpIndex(st+i-1, i, j, (targetd-d3-q+2*d)%d);
 
 					if(dp[dp_index].f_min >= INF || revdp[dp_index2].f_min >= INF)
 						continue;
@@ -513,11 +554,12 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
 					else
 					    v -= revdp[dp_index2].f_min;
 
-					if(v > ans1[j])
+					if((v > ans1[j] && targetd == ans4[j]) || targetd < ans4[j]) 
 					{
 					    ans1[j] = v;
 					    ans2[j] = i;
 					    ans3[j] = q;
+					    ans4[j] = targetd;
 					}
 			    }
 			}
@@ -525,8 +567,10 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
 
 		for(int j = 0; j < k; j++)
 		{
+
 		    if(!valid[j] || ans2[j] == -1 || ans1[j] < threshold)
 				continue;
+
 		    seed tmp;
 		    kmer hashval = 0;
 		    std::vector<size_t> index, tmp1;
@@ -537,7 +581,7 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
 
 		    int d1 = ans3[j];
 		    int d3 = C3[j][nt];
-		    int d2 = (d + d - d3 - d1) % d;
+		    int d2 = (ans4[j] + 2 * d - d1 - d3) % d;
 		    size_t nextpos;
 		    int nextval, nextd;
 
@@ -658,7 +702,7 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
 		    // if(seeds[num].size() > 0 && ans1[j] == seeds[num].back().hashval && tmp.st == seeds[num].back().st 
 		    // 	&& seeds[num].back().index == tmp.index)
 			//     continue;
-		    if(seeds[num].size() > 0 && ans1[j] == seeds[num].back().hashval)
+		    if(seeds[num].size() > 0 && ans1[j] == seeds[num].back().hashval && ans4[j] == seeds[num].back().psi)
 		    {
 		    	if(tmp.st <= seeds[num].back().st && tmp.ed >= seeds[num].back().ed)
 					continue;
@@ -675,7 +719,8 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
 		    // 	printf("%d %d %d %d %llu\n", j, num, tmp.st, tmp.ed, tmp.index);
 			tmp.hashval = ans1[j];
 		    tmp.str = hashval;
-		    tmp.str_rc = revComp(hashval, k);
+		    tmp.psi = ans4[j];
+		    //tmp.str_rc = revComp(hashval, k);
 		    seeds[num].push_back(tmp);
 		}
     }

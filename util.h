@@ -45,6 +45,7 @@ char* decode(const kmer enc, const int k, char* str);
 struct seed
 {
     int64_t hashval;
+    short psi;
     kmer str, str_rc;
     size_t st, ed;
     uint64_t index = 0;

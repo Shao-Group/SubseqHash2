@@ -41,6 +41,7 @@ void pseudo_match(string s, string t, vector<int> &align, subseqhash2seeding & s
 	sub2.getSubseq2Seeds(t, dp, revdp, h, revh, seedt);
     end = clock();
 
+
     ans[8] += (double)(end-start)/CLOCKS_PER_SEC;
 
     fill(scover.begin(), scover.end(), false);
@@ -56,7 +57,7 @@ void pseudo_match(string s, string t, vector<int> &align, subseqhash2seeding & s
 	uint64_t x1;
 
 	for(int j = 0; j < seednum; j++)
-	{	
+	{	    
     	start = clock();
 		ssh_index* ht = index_build(seeds[j]);
 		matches.clear();
@@ -71,6 +72,12 @@ void pseudo_match(string s, string t, vector<int> &align, subseqhash2seeding & s
 		{
 			int tp = 0;
 
+			if(m.s1->psi != m.s2->psi)
+			{	
+				totalmatches--;
+				continue;
+			}
+			
 			for(int i = 0; i < n; i++)
 				if((m.s1->index>>i) & 1)
 				{
