@@ -31,22 +31,19 @@ public:
 int main(int argc, const char * argv[])    
 {   
     if(argc != 6){
-	printf("usage: overlapBySeeds.out seedsDir k repeatId numReads fileExt\nrepeatId should be between 0 and floor((k-1)/2), seeds from both repeatId and k-1-repeatId are used\n");
+	fprintf(stderr, "usage: overlapBySeeds.out seedsDir k repeatId numReads fileExt\nrepeatId should be between 0 and floor((k-1)/2), seeds from both batches repeatId*2 and repeatId*2+1 are used (self symmetric if repeadId*2+1==k)\n");
 	return 1;
     }
 
     int k = atoi(argv[2]);
-    int r = atoi(argv[3]);
+    int r = atoi(argv[3])<<1;
+    if(r >= k || r < 0){
+	fprintf(stderr, "r=%d is not within valid range [0, %d]\n", r>>1, (k-1)>>1);
+	return 1;
+    }
     int n = atoi(argv[4]);
 
-    int r2 = k-1-r;
-    if(r > r2){
-	int tmp = r2;
-	r2 = r;
-	r = tmp;
-    }else if(r==r2){
-	r2 = -1; //self symmetric, no need to load twice
-    }
+    int r2 = r + 1;
 
     char filename[500];
     int i = strlen(argv[1]);
@@ -67,20 +64,18 @@ int main(int argc, const char * argv[])
 	    break;
 	}
 	loadSeedsUnordered(filename, j, all_seeds);
+	
+	if(r2 < k){
+            sprintf(filename+i, "%d-%d.%s", r2, j, argv[5]);
+            if(stat(filename, &test_file) != 0){//seed file does not exist
+                fprintf(stderr, "Stopped, cannot find file %d-%d.%s\n", r2, j, argv[5]);
+                break;
+            }
+            loadSeedsUnordered(filename, j, all_seeds);
+        }
     }
 
-    if(r2 >= 0){
-	for(j=1; j<=n; j+=1){
-	    sprintf(filename+i, "%d-%d.%s", r2, j, argv[5]);
-	    if(stat(filename, &test_file) != 0){//seed file does not exist
-		fprintf(stderr, "Stopped, cannot find file %d-%d.%s\n", r2, j, argv[5]);
-		break;
-	    }
-	    loadSeedsUnordered(filename, j, all_seeds);
-	}
-    }
-
-    sprintf(filename+i, "overlap-n%d-r%d.all-pair", n, r);
+    sprintf(filename+i, "overlap-n%d-r%d.all-pair", n, r>>1);
 
     Table share_ct(n);
 
