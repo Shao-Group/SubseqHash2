@@ -79,10 +79,11 @@ void saveSeeds(const char* filename, int k, const std::vector<seed>& seeds)
     uint64_t pos[2];//st, index
     for(auto s : seeds)
     {
-	    if(s.str < s.str_rc){
+	    kmer str_rc = revComp(s.str, k);
+	    if(s.str < str_rc){
 		    fwrite(&(s.str), sizeof(s.str), 1, fout);
 	    }else{
-		    fwrite(&(s.str_rc), sizeof(s.str_rc), 1, fout);
+		    fwrite(&(str_rc), sizeof(str_rc), 1, fout);
 	    }
 	    pos[0] = s.st;
 	    pos[1] = s.index;
