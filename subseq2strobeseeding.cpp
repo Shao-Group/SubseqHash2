@@ -119,6 +119,8 @@ void subseq2strobeseeding::DP(std::string s, size_t start, size_t end, DPCell* d
 			dp[dp_index].f_min = INF;
 		}
 
+		if(s[real_index_st] == 'N')
+			continue;
 
 		dp[idx1].f_min = dp[idx1].f_max = B2[0][alphabetIndex(s[real_index_st])][d1] * A[0][alphabetIndex(s[real_index_st])][d1];
 		dp[idx1].g_min = dp[idx1].g_max = 0;
@@ -131,6 +133,9 @@ void subseq2strobeseeding::DP(std::string s, size_t start, size_t end, DPCell* d
 		{
 		    int minj = std::max(1, i - del);
 		    int maxj = std::min(i, k - 1);
+
+			if(s[real_index_st + i - 1] == 'N')
+					    	break;
 
 		    for(int j = minj; j <= maxj; j++)
 		    {
@@ -288,6 +293,9 @@ void subseq2strobeseeding::revDP(std::string s, size_t start, size_t end, DPCell
 		    revdp[dp_index].f_min = INF;
 		}
 
+	    if(s[real_index_st] == 'N')
+	    	continue;
+
 		revdp[idx1].f_min = revdp[idx1].f_max = revB2[0][alphabetIndex(s[real_index_st])][d1] * revA[0][alphabetIndex(s[real_index_st])][d1];
 		revdp[idx1].g_min = revdp[idx1].g_max = 0;
 		h_index += d1;
@@ -299,6 +307,9 @@ void subseq2strobeseeding::revDP(std::string s, size_t start, size_t end, DPCell
 		{
 		    int minj = std::max(1, i - del);
 		    int maxj = std::min(i, k - 1);
+
+		    if(s[real_index_st - i + 1] == 'N')
+		    	break;
 
 		    for(int j = minj; j <= maxj; j++)
 		    {
@@ -426,6 +437,28 @@ void subseq2strobeseeding::combine(std::string s, size_t start, size_t end, DPCe
 
     for(int st = 0; st + n - 1 < len; st++)
     {
+    	bool skip = 0;
+		for(int i = st; i < st + n; i++)
+			if(s[i] == 'N')
+			{
+				st = i;
+				skip = 1;
+			}	
+
+		if(skip)
+		{
+			for(int j = 0; j < k; j++)
+			{
+		    	seed tmp;
+		    	if(!valid[j])
+					continue;
+
+				tmp.hashval = 0;
+				seedtmp[valid[j] - 1].push_back(tmp);
+			}
+			continue;
+		}
+
 		for(int j = 0; j < k; j++)
 		{
 		    ans1[j] = -INF;
@@ -701,16 +734,28 @@ void subseq2strobeseeding::combine(std::string s, size_t start, size_t end, DPCe
 
 
     for(int st = 0; st + w * n + prek <= len; st++)
-    {
+    {    	
+
+    	bool skip = 0;
+		for(int i = st; i < st + w * n + prek; i++)
+			if(s[i] == 'N')
+			{
+				st = i;
+				skip = 1;
+			}	
+
+		if(skip)
+			continue;
+
     	for(int j = 0; j < k; j++)
     		if(valid[j])
 	    	{
 	    		int num = valid[j] - 1;
 
 	    		if(seedtmp[num][st + prek].hashval == 0)
-	    			break;
+	    			continue;
 	    		if(w == 2 && seedtmp[num][st + prek + n].hashval == 0)
-	    			break;
+	    			continue;
 
 	    		seed tmp;
 	    		tmp.st = st + start;

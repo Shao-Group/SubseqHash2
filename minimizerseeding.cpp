@@ -17,35 +17,52 @@ void minimizerseeding::get_minimizers(std::string s, std::vector<seed>& seeds)
 {
     size_t len = s.length();
     std::list<MMentry> que;
+    std::vector<MMentry> kmerlist;
 
     kmer mask = (1ULL<<(k<<1)) - 1;
-    char cur[k];
-    s.copy(cur, k, 0);
 
-    kmer now = encode(cur, k);
-    uint64_t v = hash64(now, mask);
+    kmer now = 0;
+    size_t l = 0;
+    uint64_t v;
 
-    que.push_back((MMentry){v, 0, now});
-
-    for(size_t i = 1; i < w; i++)
+    for(size_t i = 0; i < len; i++)
     {
-        now = (now<<2) & mask;
-        now |= alphabetIndex(s[i+k-1]);
-        v = hash64(now, mask);
+        if(s[i] == 'N')
+        {
+            l = 0;
+            now = 0;
+            continue;
+        }
 
-        while(!que.empty() && v <= que.back().hash)
-            que.pop_back();
-
-        que.push_back((MMentry){v, i, now});
+        now = ((now<<2) | alphabetIndex(s[i])) & mask;
+        
+        if(++l >= k)
+        {
+            v = hash64(now, mask);
+            kmerlist.push_back((MMentry){v, i - k + 1, now});
+        }
     }
 
-    for(size_t i = w; i <= len - k; i++)
-    {       
-        while(!que.empty() && que.front().pos < i - w)
+    l = 0;
+    int sz = kmerlist.size();
+
+    for(size_t i = 0; i <= len - k; i++)
+    {
+        if(l < sz && kmerlist[l].pos == i)
+        {
+            while(!que.empty() && kmerlist[l].hash <= que.back().hash)
+                que.pop_back();
+            que.push_back(kmerlist[l++]);
+        }
+
+        if(i < w - 1)
+            continue;
+
+        while(!que.empty() && que.front().pos <= i - w)
             que.pop_front();
 
         if(seeds.empty() || que.front().pos != seeds.back().st)
-        {
+        {            
             seed tmp;
 
             tmp.st = que.front().pos;
@@ -54,28 +71,5 @@ void minimizerseeding::get_minimizers(std::string s, std::vector<seed>& seeds)
 
             seeds.push_back(tmp);
         }
-
-        now = (now<<2) & mask;
-        now |= alphabetIndex(s[i+k-1]);
-        v = hash64(now, mask);
-
-        while(!que.empty() && v <= que.back().hash)
-            que.pop_back();
-
-        que.push_back((MMentry){v, i, now});
-    }        
-
-    while(!que.empty() && que.front().pos <= len - k - w)
-        que.pop_front();
-
-    if(seeds.empty() || que.front().pos != seeds.back().st)
-    {
-        seed tmp;
-
-        tmp.st = que.front().pos;
-        tmp.ed = que.front().pos + k - 1;
-        tmp.hashval = tmp.str = que.front().str;
-
-        seeds.push_back(tmp);
     }
 }

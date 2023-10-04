@@ -2,7 +2,7 @@
   minimap2-style minimizer seeding.
 
   By: Ke, Xiang@PSU
-  Last edited: 06/15/2023
+  Last edited: 09/25/2023
 */
 
 #include "seeding.h"
@@ -30,7 +30,7 @@ private:
 
 	inline uint64_t hash64(kmer s, uint64_t mask);
 	int w;
-
+	
 public:
 
 	minimizerseeding(int k1, int w1): seeding(k1 + w1 - 1, k1)

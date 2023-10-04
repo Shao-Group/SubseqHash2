@@ -51,7 +51,18 @@ void subseqhash1seeding::DP(std::string s, DPCell* dp, int* h, std::vector<seed>
 	}
 
     for(int st = 0; st + n <= len; st++)
-    {
+    {    	
+    	bool skip = 0;
+		for(int i = st; i < st + n; i++)
+			if(s[i] == 'N')
+			{
+				st = i;
+				skip = 1;
+			}	
+
+		if(skip)
+			continue;
+
 		for(int i = 0; i <= n; i++)
 		{
 			dp_index = dpIndex(i, 0, 0);

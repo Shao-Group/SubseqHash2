@@ -62,7 +62,6 @@ int main(int argc, const char * argv[])
 
 		for(int i = 0; i < subsample; i++)
 		{		
-			//cout<<i<<" "<<seeds[i].size()<<endl;
 		    uint64_t pos[2];//st, index
 		    for(auto s : seeds[i])
 		    {

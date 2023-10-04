@@ -62,7 +62,13 @@ void pseudo_match(string s, string t, vector<int> &align, strobemerseeding seedi
 		int truematches = 0;
 		int index1, index2, index3, index4;
 		for(seedmatch m: matches)
-		{
+		{			
+			if(m.s1->str != m.s2->str)
+			{
+				totalmatches--;
+				continue;
+			}
+
 			int tp = 0;
 
 			for(int i = 0; i < k; i++)

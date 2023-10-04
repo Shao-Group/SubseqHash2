@@ -48,7 +48,6 @@ void pseudo_match(string s, vector<int> &align, string name, minimizerseeding se
     ans[8] += (double)(end-start)/CLOCKS_PER_SEC;
     	
     for(int j = 0; j < refnum; j++)
-    if(refname[j] == name)
     {
 		start = clock();
 
@@ -84,22 +83,6 @@ void pseudo_match(string s, vector<int> &align, string name, minimizerseeding se
 		totalmatches += matches.size();
 		totaltruematches += truematches;
 	}
-	else
-	{		
-		start = clock();
-		matches.clear();
-		index_get(refindex[j], seeds, matches);
-		end = clock();
-		ans[9] += (double)(end-start)/CLOCKS_PER_SEC;
-
-		for(seedmatch m: matches)
-		{
-			for(int i = m.s2->st; i <= m.s2->ed; i++)
-				fscover[i] = 1;
-		}
-
-		totalmatches += matches.size();
-	}
 
 	reverse(s.begin(), s.end());
 	for(int i = 0; i < lens; i++)
@@ -113,7 +96,6 @@ void pseudo_match(string s, vector<int> &align, string name, minimizerseeding se
     ans[8] += (double)(end-start)/CLOCKS_PER_SEC;
     	
     for(int j = 0; j < refnum; j++)
-    if(refname[j] == name)
     {
 		start = clock();
 
@@ -149,23 +131,6 @@ void pseudo_match(string s, vector<int> &align, string name, minimizerseeding se
 		totalmatches += matches.size();
 		totaltruematches += truematches;
 	}
-	else
-	{		
-		start = clock();
-		matches.clear();
-		index_get(refindex[j], seeds, matches);
-		end = clock();
-		ans[9] += (double)(end-start)/CLOCKS_PER_SEC;
-
-		for(seedmatch m: matches)
-		{
-			for(int i = lens - m.s2->ed - 1; i <= lens - m.s2->st - 1; i++)
-				fscover[i] = 1;
-		}
-
-		totalmatches += matches.size();
-	}
-
 	int sc = 0;
 	int fsc = 0;
 	int mc = 0;
@@ -193,7 +158,7 @@ void pseudo_match(string s, vector<int> &align, string name, minimizerseeding se
 		inv = 0;
 	}
 
-
+	//cout<<totalmatches<<" "<<totaltruematches<<" "<<sc<<" "<<fsc<<endl;
 	ans[0] += totalmatches;
 	ans[1] += totaltruematches;
 	if(totalmatches > 0)

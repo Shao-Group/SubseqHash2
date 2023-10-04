@@ -21,7 +21,7 @@ vector<seedmatch> matches;
 vector<vector<bool>> scover, mcover;
 vector<vector<bool>> fscover;
 
-void pseudo_match(int len, int readnum, int refno, vector<seed> &seedt, vector<int> &align)
+void pseudo_match(int len, int readnum, int refno, vector<seed> &seedt, vector<int> &align, int strand)
 {
 	matches.clear();
 
@@ -51,7 +51,10 @@ void pseudo_match(int len, int readnum, int refno, vector<seed> &seedt, vector<i
 		for(int i = 0; i < n * w + prek; i++)
 			if((m.s2->index>>i) & 1)
 			{
-				x1 = align[m.s2->st + i]; 
+				if(strand)
+					x1 = align[len - (m.s2->st + i) - 1];
+				else
+					x1 = align[m.s2->st + i]; 
 				if(x1 >= m.s1->st && x1 <= m.s1->ed)
 					tp += (m.s1->index>>(x1-m.s1->st)) & 1;
 			}
@@ -61,16 +64,29 @@ void pseudo_match(int len, int readnum, int refno, vector<seed> &seedt, vector<i
 			truematches++;	
 			for(int i = 0; i < n * w + prek; i++)
 				if((m.s2->index>>i) & 1)
-					scover[readnum][m.s2->st + i] = 1;
+				{
+					if(strand)
+						scover[readnum][len - (m.s2->st + i) - 1] = 1;
+					else
+						scover[readnum][m.s2->st + i] = 1;
+				}
 
 			for(int i = m.s2->st; i <= m.s2->ed; i++)
-				mcover[readnum][i] = 1;
+				if(strand)
+					mcover[readnum][len - i - 1] = 1;
+				else
+					mcover[readnum][i] = 1;
 		}
 		else
 		{			
 			for(int i = 0; i < n * w + prek; i++)
 				if((m.s2->index>>i) & 1)
-					fscover[readnum][m.s2->st + i] = 1;
+				{
+					if(strand)
+						fscover[readnum][len - (m.s2->st + i) - 1] = 1;
+					else
+						fscover[readnum][m.s2->st + i] = 1;
+				}
 		}
 	}
 
@@ -90,7 +106,12 @@ void pseudo_match(int len, int readnum, int refno, vector<seed> &seedt, vector<i
 
 		for(int i = 0; i < n * w + prek; i++)
 			if((m.s2->index>>i) & 1)
-				fscover[readnum][m.s2->st + i] = 1;
+			{
+				if(strand)
+					fscover[readnum][len - (m.s2->st + i) - 1] = 1;
+				else
+					fscover[readnum][m.s2->st + i] = 1;
+			}
 	}
 
 
@@ -250,11 +271,12 @@ int main(int argc, const char * argv[])
 			for(int l = 0; l < refnum; l++)
 				if(refname[l] == trueref[j])
 				{
-					pseudo_match(reads[j], j, l, seedt, align[j]);
+					pseudo_match(reads[j], j, l, seedt, align[j], 0);
 					break;
 				}
 			
 			seedt.clear();
+			ret = 1;
 
 		    while(ret == 1)
 		    {
@@ -290,7 +312,7 @@ int main(int argc, const char * argv[])
 			for(int l = 0; l < refnum; l++)
 				if(refname[l] == trueref[j])
 				{
-					pseudo_match(reads[j], j, l, seedt, align[j]);
+					pseudo_match(reads[j], j, l, seedt, align[j], 1);
 					break;
 				}
 		}

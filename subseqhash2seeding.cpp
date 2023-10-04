@@ -126,6 +126,8 @@ void subseqhash2seeding::DP(std::string s, size_t start, size_t end, DPCell* dp,
 			dp[dp_index].f_min = INF;
 		}
 
+		if(s[real_index_st] == 'N')
+			continue;
 
 		dp[idx1].f_min = dp[idx1].f_max = B2[0][alphabetIndex(s[real_index_st])][d1] * A[0][alphabetIndex(s[real_index_st])][d1];
 		dp[idx1].g_min = dp[idx1].g_max = 0;
@@ -138,6 +140,9 @@ void subseqhash2seeding::DP(std::string s, size_t start, size_t end, DPCell* dp,
 		{
 		    int minj = std::max(1, i - del);
 		    int maxj = std::min(i, k - 1);
+
+		    if(s[real_index_st + i - 1] == 'N')
+		    	break;
 
 		    for(int j = minj; j <= maxj; j++)
 		    {
@@ -266,7 +271,6 @@ void subseqhash2seeding::revDP(std::string s, size_t start, size_t end, DPCell* 
 		int en = std::max(st - n + 1, 0);
 		int interval_len = st - en + 1;
 
-
 		for(int i = 0; i <= interval_len; i++)
 		{
 		    h_index = hIndex(i, 0, 0);
@@ -295,6 +299,9 @@ void subseqhash2seeding::revDP(std::string s, size_t start, size_t end, DPCell* 
 		    revdp[dp_index].f_min = INF;
 		}
 
+	    if(s[real_index_st] == 'N')
+	    	continue;
+
 		revdp[idx1].f_min = revdp[idx1].f_max = revB2[0][alphabetIndex(s[real_index_st])][d1] * revA[0][alphabetIndex(s[real_index_st])][d1];
 		revdp[idx1].g_min = revdp[idx1].g_max = 0;
 		h_index += d1;
@@ -306,6 +313,9 @@ void subseqhash2seeding::revDP(std::string s, size_t start, size_t end, DPCell* 
 		{
 		    int minj = std::max(1, i - del);
 		    int maxj = std::min(i, k - 1);
+
+		    if(s[real_index_st - i + 1] == 'N')
+		    	break;
 
 		    for(int j = minj; j <= maxj; j++)
 		    {
@@ -431,6 +441,17 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
 
     for(int st = 0; st + n - 1 < len; st++)
     {
+    	bool skip = 0;
+		for(int i = st; i < st + n; i++)
+			if(s[i] == 'N')
+			{
+				st = i;
+				skip = 1;
+			}	
+
+		if(skip)
+			continue;
+
 		for(int j = 0; j < k; j++)
 		{
 		    ans1[j] = -INF;
@@ -717,9 +738,11 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
 
 		    // if(tmp.index > ((uint64_t)1<<n))
 		    // 	printf("%d %d %d %d %llu\n", j, num, tmp.st, tmp.ed, tmp.index);
+
 			tmp.hashval = ans1[j];
 		    tmp.str = hashval;
 		    tmp.psi = ans4[j];
+
 		    //tmp.str_rc = revComp(hashval, k);
 		    seeds[num].push_back(tmp);
 		}

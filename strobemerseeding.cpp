@@ -21,8 +21,8 @@ void strobemerseeding::get_strobemers(std::string str, std::vector<std::vector<s
                 char cur[k*2];
 
                 strobe.copy(cur, k*2, 0);
-                tmp.hashval = encode(cur, k*2);
-                
+                tmp.str = encode(cur, k*2);
+                tmp.hashval = (uint64_t)(tmp.str>>64) ^ ((uint64_t)tmp.str << 1);
                 seeds[i].push_back(tmp);
             }
         }
@@ -41,7 +41,8 @@ void strobemerseeding::get_strobemers(std::string str, std::vector<std::vector<s
                 char cur[k*3];
 
                 strobe.copy(cur, k*3, 0);
-                tmp.hashval = encode(cur, k*3);
+                tmp.str = encode(cur, k*3);
+                tmp.hashval = (uint64_t)(tmp.str>>64) ^ ((uint64_t)tmp.str << 1);
                 
                 seeds[i].push_back(tmp);
             }       
