@@ -47,7 +47,6 @@ int main(int argc, const char * argv[]){
 						n, k, d, k, argv[5]);
 	const subseqhash2seeding& myseeding = factory.getMySeeding();
 	int chunk_size = myseeding.getChunkSize();
-	int dim1 = (n+1) * (k+1) * d;
 
 	mkdir(output_dir, 0744);
 

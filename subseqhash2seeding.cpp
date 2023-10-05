@@ -726,7 +726,7 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
     }
 } // end of combine
 
-void subseqhash2seeding::getSubseq2Seeds(std::string& s, DPCell* dp, DPCell* revdp, int* h, int* revh,
+void subseqhash2seeding::getSubseq2Seeds(std::string s, DPCell* dp, DPCell* revdp, int* h, int* revh,
 		     std::vector<std::vector<seed>>& seeds)
 {	
     int len = s.length();
@@ -747,7 +747,7 @@ void subseqhash2seeding::getSubseq2Seeds(std::string& s, DPCell* dp, DPCell* rev
     }
 }
 
-double subseqhash2seeding::getSeeds(std::string& s, size_t s_idx,
+double subseqhash2seeding::getSeeds(std::string& s, const size_t s_idx,
 				  const char* output_dir, const int dir_len,
 				  DPCell* dp, DPCell* revdp,
 				  int* h, int* revh){

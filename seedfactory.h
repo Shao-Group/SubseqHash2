@@ -21,7 +21,7 @@
 #ifndef _SEEDFACTORY_H
 #define _SEEDFACTORY_H
 
-#define NUMTHREADS 2
+#define NUMTHREADS 15
 
 struct Read
 {
@@ -48,9 +48,9 @@ class seedFactory
     double total_density;
     int num_jobs;
 
-    SeedType myseeding;
     int n, k, d, dim1;
-
+    SeedType myseeding;
+    
     //void getSubseqSeeds(const Read &r, DPCell* dp, DPCell* revdp, int* h, int* revh);
     template <typename... Resources>
     void atWork(int id, Resources&&... args);
@@ -91,7 +91,7 @@ public:
     template <typename... Resources>
     void addMinions(int id, Resources&&... args);
 
-    const SeedType& getMySeeding() const{
+    SeedType& getMySeeding(){
 	return myseeding;
     }
 };

@@ -56,6 +56,7 @@ struct seed
   Compute the reverse compliment of a given kmer s.
 */
 kmer revComp(kmer s, int k);
+std::string revComp(const std::string& s);
 
 struct seedinfo
 {

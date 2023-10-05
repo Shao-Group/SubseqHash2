@@ -81,8 +81,8 @@ public:
     }
 
     void init(const char* table_filename);
-    void getSubseq2Seeds(std::string& s, DPCell* dp, DPCell* revdp, int* h, int* revh, std::vector<std::vector<seed>>& seeds);
-    double getSeeds(std::string& s, size_t s_idx,
+    void getSubseq2Seeds(std::string s, DPCell* dp, DPCell* revdp, int* h, int* revh, std::vector<std::vector<seed>>& seeds);
+    double getSeeds(std::string& s, const size_t s_idx,
 		    const char* output_dir, const int dir_len,
 		    DPCell* dp, DPCell* revdp, int* h, int*revh);
 	
