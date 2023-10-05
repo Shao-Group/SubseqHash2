@@ -43,7 +43,7 @@ public:
 	}
 
     void get_syncmers(std::string s, std::vector<seed>& seeds);
-    //produce seeds for both s and revcomp(s),
+    //produce seeds for both s and revComp(s),
     //stored as 0-s_idx.syncmerseed and 1-s_idx.syncmerseed respectively
     double getSeeds(std::string& s, const size_t s_idx,
 		    const char* output_dir, const int dir_len);
