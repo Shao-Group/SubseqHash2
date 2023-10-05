@@ -34,7 +34,7 @@ int main(int argc, const char * argv[])
     char output_dir[200];
     int dir_len = sprintf(output_dir, "./seeds");
 
-    seedFactory factory("./seeds", dir_len, n, k, d, subsample , argv[6]);
+    seedFactory<subseqhash2seeding> factory("./seeds", dir_len, n, k, d, subsample , argv[6]);
 
 	while(fin>>tmp)
 	{			

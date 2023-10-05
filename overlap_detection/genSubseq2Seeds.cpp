@@ -1,4 +1,5 @@
 #include "../seedfactory.h"
+#include "../subseqhash2seeding.h"
 #include <cstring>
 #include <fstream>
 #include <vector>
@@ -34,12 +35,29 @@ int main(int argc, const char * argv[]){
 
     string read;
     size_t read_idx = 0;
+
+    //resources for minions
+    DPCell* dp[NUMTHREADS];
+    DPCell* revdp[NUMTHREADS];
+    int* h[NUMTHREADS];
+    int* revh[NUMTHREADS];
     
     {
-	seedFactory factory(output_dir, dir_len,
-			    n, k, d, k, argv[5]);
+	seedFactory<subseqhash2seeding> factory(output_dir, dir_len,
+						n, k, d, k, argv[5]);
+	const subseqhash2seeding& myseeding = factory.getMySeeding();
+	int chunk_size = myseeding.getChunkSize();
+	int dim1 = (n+1) * (k+1) * d;
 
 	mkdir(output_dir, 0744);
+
+	for(int i=0; i<NUMTHREADS; ++i){
+	    dp[i] = (DPCell*) malloc(sizeof *dp[i] * chunk_size * dim1);
+	    revdp[i] = (DPCell*) malloc(sizeof *revdp[i] * chunk_size * dim1);
+	    h[i] = (int*) malloc(sizeof *h[i] * dim1);
+	    revh[i] = (int*) malloc(sizeof *revh[i] * dim1);
+	    factory.addMinions(i, dp[i], revdp[i], h[i], revh[i]);
+	}
 
 	while(fin.get()=='>'){
 	    //skip the header
@@ -50,6 +68,13 @@ int main(int argc, const char * argv[]){
 	    //skip the mapping info
 	    fin.ignore(numeric_limits<streamsize>::max(), '\n');
 	}
+    }
+
+    for(int i=0; i<NUMTHREADS; ++i){
+	free(dp[i]);
+	free(revdp[i]);
+	free(h[i]);
+	free(revh[i]);
     }
 
     return 0;
