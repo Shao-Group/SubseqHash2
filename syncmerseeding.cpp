@@ -61,6 +61,7 @@ void syncmerseeding::get_syncmers(std::string str, std::vector<seed>& seeds)
 		tmp.str = strval;
 
                 seeds.push_back(tmp);
+		break;
             }
 
         now = (now<<2) & mask;
@@ -101,6 +102,7 @@ void syncmerseeding::get_syncmers(std::string str, std::vector<seed>& seeds)
 	    tmp.str = strval;
 
             seeds.push_back(tmp);
+	    break;
         }
 }
 
