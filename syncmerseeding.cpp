@@ -124,5 +124,5 @@ double syncmerseeding::getSeeds(std::string& s, const size_t s_idx,
 	    dir_len, output_dir, 1, s_idx);
     saveSeeds(output_filename, k, seeds);
 
-    return (density + seeds.size())/s.length();
+    return (density + seeds.size())/(s.length()<<1);
 }
