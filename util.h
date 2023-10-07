@@ -2,7 +2,7 @@
   Utility functions for SubseqHash2.
 
   By: Ke, Xiang@PSU
-  Last edited: 05/14/2023
+  Last edited: 10/06/2023
 */
 
 #ifndef _UTIL_H

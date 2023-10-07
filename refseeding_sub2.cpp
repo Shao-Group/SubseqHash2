@@ -40,18 +40,18 @@ int main(int argc, const char * argv[])
 	{
 		getline(refin, refseq);
 		vector<vector<seed>> seeds(subsample, vector<seed>(0));
+		vector<FILE*> fout;
 
 		info = info.substr(1, info.find(' ') - 1);
-
-
-		sub2.getSubseq2Seeds(refseq, dp, revdp, h, revh, seeds);
-
 
 		for(int i = 0; i < subsample; i++)
 		{		
 			string path = "./refsub2/" + species + "/" + info + "_" + to_string(n) + "_" + to_string(k) + "_" + to_string(d) + "_" + to_string(i);
-			saveSeedsStrPosition(path.c_str(), seeds[i]);
+			fout.push_back(fopen(path.c_str(), "wb"));
 		}
+
+		sub2.writeSubseq2Seeds(refseq, dp, revdp, h, revh, seeds, fout);
+
 	}
 
     return 0;

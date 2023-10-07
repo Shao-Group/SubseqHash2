@@ -769,3 +769,43 @@ void subseqhash2seeding::getSubseq2Seeds(std::string s, DPCell* dp, DPCell* revd
 		st = en - n + 2;
     }
 }
+
+void subseqhash2seeding::writeSubseq2Seeds(std::string s, DPCell* dp, DPCell* revdp, int* h, int* revh,
+		     std::vector<std::vector<seed>>& seeds, std::vector<FILE*> fout)
+{	
+    int len = s.length();
+
+    int st = 0, en = 0;
+    uint64_t pos[2];//st, index
+
+    while(en < len - 1)
+    {
+		en = st + chunk_size - 1;
+		if(en >= len)
+		    en = len - 1;
+
+		DP(s, st, en, dp, h);
+		revDP(s, st, en, revdp, revh);
+		combine(s, st, en, dp, revdp, seeds);
+
+		for(int i = 0; i < num_valid; i++)
+		{
+		    for(auto s : seeds[i])
+		    {
+				fwrite(&(s.hashval), sizeof(int64_t), 1, fout[i]);
+				fwrite(&(s.str), sizeof(kmer), 1, fout[i]);
+				pos[0] = s.st;
+				pos[1] = s.index;
+				fwrite(pos, sizeof(uint64_t), 2, fout[i]);
+		    }
+
+		    seeds[i].clear();
+		}
+
+		st = en - n + 2;
+    }
+
+
+	for(int i = 0; i < num_valid; i++)
+    	fclose(fout[i]);
+}

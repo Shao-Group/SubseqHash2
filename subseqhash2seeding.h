@@ -2,7 +2,7 @@
   subseqhash2 seeding.
 
   By: Ke, Xiang@PSU
-  Last edited: 05/16/2023
+  Last edited: 10/6/2023
 */
 
 #include "seeding.h"
@@ -75,7 +75,9 @@ public:
 	void init(const char* table_filename);
 	void getSubseq2Seeds(std::string s, DPCell* dp, DPCell* revdp, int* h, int* revh,
 			     std::vector<std::vector<seed>>& seeds);
-	
+	void writeSubseq2Seeds(std::string s, DPCell* dp, DPCell* revdp, int* h, int* revh,
+		     std::vector<std::vector<seed>>& seeds, std::vector<FILE*> fout);
+
 	int getChunkSize()
 	{
 		return chunk_size;
