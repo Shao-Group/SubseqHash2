@@ -57,7 +57,7 @@ double strobemerseeding::getSeeds(std::string& s, const size_t s_idx,
     double density = 0.0;
     char output_filename[500];
     for(int i=0; i<seednum; ++i){
-	sprintf(output_filename, "%.*s/%d-%zu.subseqseed2",
+	sprintf(output_filename, "%.*s/%d-%zu.strobemerseed",
 		dir_len, output_dir, i<<1, s_idx);
 	saveSeeds(output_filename, k*3, seeds[i]);
 	density += seeds[i].size();
@@ -66,7 +66,7 @@ double strobemerseeding::getSeeds(std::string& s, const size_t s_idx,
 
     get_strobemers(revComp(s), seeds);
     for(int i=0; i<seednum; ++i){
-	sprintf(output_filename, "%.*s/%d-%zu.subseqseed2",
+	sprintf(output_filename, "%.*s/%d-%zu.strobemerseed",
 		dir_len, output_dir, (i<<1)+1, s_idx);
 	saveSeeds(output_filename, k*3, seeds[i]);
 	density += seeds[i].size();
