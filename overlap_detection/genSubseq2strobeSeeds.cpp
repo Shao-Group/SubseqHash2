@@ -30,8 +30,8 @@ int main(int argc, const char * argv[]){
     }
 
     char output_dir[500];
-    int dir_len = sprintf(output_dir, "%s-subseq2strobeSeeds-n%d-k%d-d%d/",
-			  argv[1], n, k, d);
+    int dir_len = sprintf(output_dir, "%s-subseq2strobeSeeds-n%d-k%d-d%d-w%d-pre_k%d/",
+			  argv[1], n, k, d, w, pre_k);
     
     ifstream fin(argv[1]);
 
