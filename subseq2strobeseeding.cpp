@@ -769,13 +769,14 @@ double subseq2strobeseeding::getSeeds(std::string& s, const size_t s_idx,
 				      int* h, int* revh){
     std::vector<std::vector<seed>> seeds(num_valid, std::vector<seed>(0));
     getSubseq2Seeds(s, dp, revdp, h, revh, seeds);
+    int seed_len = prek + k;
 
     double density = 0.0;
     char output_filename[500];
     for(int i=0; i<num_valid; ++i){
 	sprintf(output_filename, "%.*s/%d-%zu.ss2sseed",
 		dir_len, output_dir, i<<1, s_idx);
-	saveSeeds(output_filename, k, seeds[i]);
+	saveSeeds(output_filename, seed_len, seeds[i]);
 	density += seeds[i].size();
 	seeds[i].clear();
     }
@@ -784,7 +785,7 @@ double subseq2strobeseeding::getSeeds(std::string& s, const size_t s_idx,
     for(int i=0; i<num_valid; ++i){
 	sprintf(output_filename, "%.*s/%d-%zu.ss2sseed",
 		dir_len, output_dir, (i<<1)+1, s_idx);
-	saveSeeds(output_filename, k, seeds[i]);
+	saveSeeds(output_filename, seed_len, seeds[i]);
 	density += seeds[i].size();
     }
     
