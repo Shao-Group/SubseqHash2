@@ -37,7 +37,8 @@ int main(int argc, const char * argv[])
 
     int k = atoi(argv[2]);
     int r = atoi(argv[3])<<1;
-    if(r >= k || r < 0){
+    int is_subseq2 = strcmp(argv[5], "subseqseed2");
+    if(is_subseq2 == 0 && (r >= k || r < 0)){
 	fprintf(stderr, "r=%d is not within valid range [0, %d]\n", r>>1, (k-1)>>1);
 	return 1;
     }
@@ -65,7 +66,9 @@ int main(int argc, const char * argv[])
 	}
 	loadSeedsUnordered(filename, j, all_seeds);
 	
-	if(r2 < k){
+	if(is_subseq2 == 0 && r2 >= k){
+	    continue;
+	}else{
             sprintf(filename+i, "%d-%d.%s", r2, j, argv[5]);
             if(stat(filename, &test_file) != 0){//seed file does not exist
                 fprintf(stderr, "Stopped, cannot find file %d-%d.%s\n", r2, j, argv[5]);
