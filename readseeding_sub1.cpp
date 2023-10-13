@@ -22,6 +22,8 @@ int main(int argc, const char * argv[])
     int subsample = atoi(argv[4]);
     dim1 = (n+1) * (k+1) * d;
 
+    clock_t start,end;
+
     subseqhash1seeding sub1(n, k, d);
     sub1.init(argv[5]);
 
@@ -40,13 +42,18 @@ int main(int argc, const char * argv[])
     uint64_t tmp = 0;
     int num = 0;
 
+    double anstime = 0;
+    
 	while(getline(refin, refseq))
 	{
 		getline(refin, info);
 		getline(refin, info);
 		vector<seed> seeds;
 		
+    	start = clock();
 		sub1.DP(refseq, dp, h, seeds);
+		end = clock();
+	    anstime += (double)(end-start)/CLOCKS_PER_SEC;
 
 	    uint64_t pos[2];//st, index
 	    for(auto s : seeds)
@@ -86,6 +93,7 @@ int main(int argc, const char * argv[])
 
 		num++;
 	}
+	printf("%.2lf\n", anstime);
 
     return 0;
 }

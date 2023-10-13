@@ -28,6 +28,7 @@ int main(int argc, const char * argv[])
     subseq2strobeseeding sub2(n, k, d, subsample, 1, prek);
     sub2.init(argv[6]);
 
+    clock_t start,end;
 
 	int chunk_size = sub2.getChunkSize();
 
@@ -52,6 +53,7 @@ int main(int argc, const char * argv[])
     uint64_t tmp = 0;
     kmer zkmer = 0;
     int num = 0;
+    double anstime = 0;
 
 	while(getline(refin, refseq))
 	{
@@ -59,7 +61,10 @@ int main(int argc, const char * argv[])
 		getline(refin, info);
 		vector<vector<seed>> seeds(subsample, vector<seed>(0));
 
+    	start = clock();
 		sub2.getSubseq2Seeds(refseq, dp, revdp, h, revh, seeds);
+		end = clock();
+	    anstime += (double)(end-start)/CLOCKS_PER_SEC;
 
 		for(int i = 0; i < subsample; i++)
 		{		
@@ -113,5 +118,6 @@ int main(int argc, const char * argv[])
 		num++;
 	}
 
+	printf("%.2lf\n", anstime);
     return 0;
 }
