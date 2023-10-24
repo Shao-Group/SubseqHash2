@@ -58,7 +58,7 @@ void init(int k, int d, string path)
 		
 	unsigned seed;
 	mt19937 generator(rd());
-	uniform_int_distribution<int64_t> distribution((int64_t)1<<45, (int64_t)1<<55);
+	uniform_int_distribution<int64_t> distribution((int64_t)1<<45, (int64_t)1<<55);	
 
 	for(int i = 0; i < k; i++)
 	{

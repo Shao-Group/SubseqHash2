@@ -496,7 +496,7 @@ void subseq2strobeseeding::combine(std::string s, size_t start, size_t end, DPCe
 				}
 		    }
 
-		    if(i >= k && valid[k-1])
+		    if(i >= k-1 && valid[k-1])
 		    {
 	    		int d3 = C3[k-1][nt];
 	    		int d1 = (d-d3+d)%d;
