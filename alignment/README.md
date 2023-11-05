@@ -14,9 +14,8 @@ Codes and instructions for comparing SubseqHash2, SubseqHash2w, SubseqHash, mini
   ../src/gentable.out k d ./table_saving_path
   ../src/gentable_subseqhash1.out k d t ./table_saving_directory
   ```
-
-    - Run ` ../src/gentable.out k d ./table_saving_path` generates random tables for SubseqHash2, where `k` is the length of subsequence, `d` is a parameter, and `./table_saving_path` is the path of the file saving the tables. A sample file is at `./table_subseq2/25_11` with k=25 and d = 11.
-    - Run `../src/gentable_subseqhash1.out k d t ./table_saving_directory`generates random tables for SubseqHash, where `k` is the length of subsequence, `d` is a parameter, `t` is the number of repeating, and `./table_saving_directory` is the directory saving the files. There will be `t` files in that directory, and each one has one set of random tables for SubseqHash.  A sample folder is at `./table_subseq1/25_11` with k = 25, d = 11 and 10 files with different tables in it.
+    - ` ../src/gentable.out k d ./table_saving_path` generates random tables for SubseqHash2, where `k` is the length of subsequence, `d` is a parameter, and `./table_saving_path` is the path of the file saving the tables. A sample file is at `./table_subseq2/25_11` with k=25 and d = 11.
+    - `../src/gentable_subseqhash1.out k d t ./table_saving_directory`generates random tables for SubseqHash, where `k` is the length of subsequence, `d` is a parameter, `t` is the number of repeating, and `./table_saving_directory` is the directory saving the files. There will be `t` files in that directory, and each one has one set of random tables for SubseqHash.  A sample folder is at `./table_subseq1/25_11` with k = 25, d = 11 and 10 files with different tables in it.
 
 
 - To get the results:
