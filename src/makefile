@@ -15,11 +15,6 @@ product-c++11: strobemer $(ALLDEP) $(patsubst %.cpp,%.out,$(filter-out $(patsubs
 product: CFLAGS = -O3 -std=c++14
 product: strobemer $(ALLDEP) $(patsubst %.cpp,%.out,$(filter-out $(patsubst %.o,%.cpp,$(ALLDEP)) $(ALLILP), $(wildcard *.cpp)))
 
-test%.out: test%.cpp $(ALLDEP)
-	$(CPP) $(CFLAGS) -o $@ $^ $(LIBS) -pthread
-test2%.out: test%.cpp $(ALLDEP)
-	$(CPP) $(CFLAGS) -o $@ $^ $(LIBS) -pthread
-
 ./strobemer/index.o: ./strobemer/index.cpp
 	$(CPP) $(CFLAGS) -MMD -c ./strobemer/index.cpp -o ./strobemer/index.o
 
@@ -36,6 +31,7 @@ test2%.out: test%.cpp $(ALLDEP)
 
 clean:
 	rm -rf *.out *.o *.dSYM *.d
+	rm ./strobemer/*.o ./strobemer/*.d
 
 .PHONY: realclean clean-backups
 
