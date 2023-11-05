@@ -151,7 +151,7 @@ int main(int argc, const char * argv[])
 {    
     if(argc != 4)
     {
-		printf("usage: test_mini.out readFile k w\n");
+		printf("usage: alignment_mini.out readFile k w\n");
 		return 1;
     }
 

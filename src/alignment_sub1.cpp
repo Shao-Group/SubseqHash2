@@ -175,7 +175,7 @@ int main(int argc, const char * argv[])
 {    
     if(argc != 7)
     {
-		printf("usage: genSubseq2Seeds.out readFile n k d subsample randTableFile\n");
+		printf("usage: alignment_sub1.out readFile n k d t randTableFile\n");
 		return 1;
     }
 

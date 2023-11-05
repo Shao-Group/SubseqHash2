@@ -10,4 +10,6 @@ The repository can be installed with following command. The detailed instruction
 
 ```
 git clone https://github.com/Shao-Group/subseqhash2.git
+cd src
+make product
 ``` 

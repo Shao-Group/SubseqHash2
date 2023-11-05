@@ -196,9 +196,9 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
 
 int main(int argc, const char * argv[])
 {    
-    if(argc != 9)
+    if(argc != 8)
     {
-		printf("usage: genSubseq2Seeds.out readFile n k d subsample w prek randTableFile\n");
+		printf("usage: alignment_substro.out readFile n k d t prek randTableFile\n");
 		return 1;
     }
 
@@ -206,7 +206,7 @@ int main(int argc, const char * argv[])
     k = atoi(argv[3]);
     d = atoi(argv[4]);
     int subsample = atoi(argv[5]);
-    w = atoi(argv[6]);
+    w = 1;
     prek = atoi(argv[7]);
     dim1 = (n+1) * (k+1) * d;
 
