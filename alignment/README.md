@@ -10,7 +10,7 @@ Codes and instructions for comparing SubseqHash2, SubseqHash2w, SubseqHash, mini
 
   - Run `./seqsimulation l e n > data_file` to simulate pairs of sequences. `l` is the length of random generated sequence in each pair. `n` is the number of pairs. `e` is a double number which is the mutation rate for each position. `data_file` is the path to save the generated data. In the file, there are 3 * n lines. In every three lines, the first two line are two sequences, the third line is the ground-truth alignment. There are `l` numbers in the third line. The i-th number `$x_i$` means the i-th char in first sequence should be aligned to the `$x_i$`-th number in second sequence. If the number is -1, it means this char is replaced or deleted.
     
- - To generate random tables for SubseqHash/SubseqHash2
+- To generate random tables for SubseqHash/SubseqHash2
   ```
   ../src/gentable.out k d ./table_saving_path
   ../src/gentable_subseqhash1.out k d t ./table_saving_directory
