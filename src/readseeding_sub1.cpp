@@ -93,7 +93,7 @@ int main(int argc, const char * argv[])
 
 		num++;
 	}
-	printf("%.2lf\n", anstime);
+	//printf("%.2lf\n", anstime);
 
     return 0;
 }

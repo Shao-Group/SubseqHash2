@@ -207,11 +207,11 @@ int main(int argc, const char * argv[])
     d = atoi(argv[4]);
     int subsample = atoi(argv[5]);
     w = 1;
-    prek = atoi(argv[7]);
+    prek = atoi(argv[6]);
     dim1 = (n+1) * (k+1) * d;
 
     subseq2strobeseeding sub2(n, k, d, subsample, w, prek);
-    sub2.init(argv[8]);
+    sub2.init(argv[7]);
 
 	int chunk_size = sub2.getChunkSize();
 

@@ -8,9 +8,8 @@ Codes and instructions for comparing the Probability of Hash Collision between S
   g++ -o simulate simulate.cpp -std=c++11
   ./simulate k n e data_directory
   ```
-
-  - Run `./simulate k n e data_directory` to simulate pairs of strings. `k` is the length of random generated string in each pair. `n` is the number of pairs. `e` is maximal edit distance between two strings in each pair. `data_directory` is the path of the directory that save `e` different files named from 1 to e. In file `i`, there are 2 * n lines, every two lines contain two strings, the first one is of lenth `k` and the edit distance of the two strings is `i`.
-  - 10 sample data files are in folder `./data`, each file has 100 pairs of strings with k = 20. The 10 files are named from 1 to 10 which is the edit distance between the string pairs in that file.
+    - Run `./simulate k n e data_directory` to simulate pairs of strings. `k` is the length of random generated string in each pair. `n` is the number of pairs. `e` is maximal edit distance between two strings in each pair. `data_directory` is the path of the directory that save `e` different files named from 1 to e. In file `i`, there are 2 * n lines, every two lines contain two strings, the first one is of lenth `k` and the edit distance of the two strings is `i`.
+    - 10 sample data files are in folder `./data`, each file has 100 pairs of strings with k = 20. The 10 files are named from 1 to 10 which is the edit distance between the string pairs in that file.
 
 - To generate random tables for SubseqHash/SubseqHash2
   ```
