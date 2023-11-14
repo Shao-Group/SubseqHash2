@@ -759,7 +759,8 @@ double subseqhash2seeding::getSeeds(std::string& s, const size_t s_idx,
     for(int i=0; i<num_valid; ++i){
 	sprintf(output_filename, "%.*s/%d-%zu.subseqseed2",
 		dir_len, output_dir, i, s_idx);
-	saveSeeds(output_filename, k, seeds[i]);
+	//saveSeeds(output_filename, k, seeds[i]);
+	saveSeedsWithScore(output_filename, k, seeds[i]);
 	density += seeds[i].size();
     }
     return density/(s.length()*num_valid);

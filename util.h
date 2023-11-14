@@ -78,6 +78,7 @@ void index_get(ssh_index* ht, std::vector<seed>& seeds, std::vector<seedmatch>& 
  * st and index are saved but not used.
  */
 void saveSeeds(const char* filename, int k, const std::vector<seed>& seeds);
+void saveSeedsWithScore(const char* filename, int k, const std::vector<seed>& seeds);
 /*
  * For seedfactory and overlap_detection, only keep one copy of each unique subseq for
  * each read, st and index are not used.
