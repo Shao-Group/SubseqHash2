@@ -53,7 +53,7 @@ int main(int argc, const char * argv[])
 		    
 		    for(auto s : seeds[i])
 		    {
-		    	fprintf(fout, "%ld\t", s.hashval);
+		    	fprintf(fout, "(%d, %ld)\t", s.psi, s.hashval);
 
 				char* seedstr = (char*)malloc(sizeof(char) *k);
 				decode(s.str, k, seedstr);
