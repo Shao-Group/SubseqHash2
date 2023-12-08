@@ -105,6 +105,30 @@ void saveSeeds(const char* filename, int k, const std::vector<seed>& seeds)
     fclose(fout);
 }
 
+
+void saveSeedsWithScore(const char* filename, int k, const std::vector<seed>& seeds)
+{
+    FILE* fout = fopen(filename, "wb");
+    fwrite(&k, sizeof(k), 1, fout);
+    uint64_t pos[2];//st, index
+    for(auto s : seeds)
+    {
+            kmer str_rc = revComp(s.str, k);
+            if(s.str < str_rc){
+                    fwrite(&(s.str), sizeof(s.str), 1, fout);
+            }else{
+                    fwrite(&(str_rc), sizeof(str_rc), 1, fout);
+            }
+	    fwrite(&(s.hashval), sizeof(s.hashval), 1, fout);
+	    fwrite(&(s.psi), sizeof(s.psi), 1, fout);
+            pos[0] = s.st;
+            pos[1] = s.index;
+            fwrite(pos, sizeof(s.index), 2, fout);
+    }
+
+    fclose(fout);
+}
+
 void loadSeedsUnordered(const char* filename, const size_t read_id,
 		std::unordered_map<kmer, std::vector<size_t>, kmerHash> &all_seeds){
 	FILE* fin = fopen(filename, "rb");
