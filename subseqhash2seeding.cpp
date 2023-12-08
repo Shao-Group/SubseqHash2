@@ -704,20 +704,22 @@ void subseqhash2seeding::combine(std::string s, size_t start, size_t end, DPCell
 			//     continue;
 		    if(seeds[num].size() > 0 && ans1[j] == seeds[num].back().hashval && ans4[j] == seeds[num].back().psi)
 		    {
-		    	if(tmp.st <= seeds[num].back().st && tmp.ed >= seeds[num].back().ed)
-					continue;
-				else
-					if(tmp.st >= seeds[num].back().st && tmp.ed <= seeds[num].back().ed)
-					{
-						seeds[num].back().st = tmp.st;
-						seeds[num].back().index = tmp.index;
-						continue;
-					}
+			/*
+		    	if(tmp.st <= seeds[num].back().st && tmp.ed >= seeds[num].back().ed) continue;
+			else if(tmp.st >= seeds[num].back().st && tmp.ed <= seeds[num].back().ed)
+			{
+				seeds[num].back().st = tmp.st;
+				seeds[num].back().index = tmp.index;
+				continue;
+			}
+			*/
+			if(tmp.ed >= seeds[num].back().ed) seeds[num].back().ed = tmp.ed;
+			continue;
 		    }
 
 		    // if(tmp.index > ((uint64_t)1<<n))
 		    // 	printf("%d %d %d %d %llu\n", j, num, tmp.st, tmp.ed, tmp.index);
-			tmp.hashval = ans1[j];
+		    tmp.hashval = ans1[j];
 		    tmp.str = hashval;
 		    tmp.psi = ans4[j];
 		    //tmp.str_rc = revComp(hashval, k);

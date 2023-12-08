@@ -13,22 +13,40 @@
 
 using namespace std;
 
-void loadSeedsWithScore(const char* filename, map<int64_t, size_t>& score_freq){
+struct Seed{
+    kmer s;
+    size_t ct;
+    Seed(kmer x):s(x),ct(0){}
+};
+
+void loadSeedsWithScore(const char* filename, map<int64_t, Seed>& score_freq){
     FILE* fin = fopen(filename, "rb");
     size_t ret;
     int k;
+    kmer s;
     int64_t score;
     ret = fread(&k, sizeof(k), 1, fin);
     while(true){
-	//skip kmer
-	ret = fseek(fin, sizeof(kmer), SEEK_CUR);
-	ret = fread(&score, sizeof(score), 1, fin);
+	ret = fread(&s, sizeof(s), 1, fin);
 	if(ret != 1) break;
+	//skip kmer
+	//ret = fseek(fin, sizeof(kmer), SEEK_CUR);
+	ret = fread(&score, sizeof(score), 1, fin);
+	//if(ret != 1) break;
 	//skip psi, st, index
 	fseek(fin, sizeof(short)+(sizeof(uint64_t)<<1), SEEK_CUR);
 	
-	auto result = score_freq.emplace(score, 0);
-	result.first -> second += 1;
+	auto result = score_freq.emplace(piecewise_construct,
+			                 forward_as_tuple(score),
+					 forward_as_tuple(s));
+	if(result.second == false && result.first->second.s != s){
+	    char buf1[k+1], buf2[k+1];
+	    fprintf(stderr, "%.*s and %.*s has the same score %ld\n",
+			    k, decode(s, k, buf1), 
+			    k, decode(result.first->second.s, k, buf2),
+			    score);
+	}
+	result.first -> second.ct += 1;
     }
 
     if(ferror(fin)){
@@ -63,7 +81,7 @@ int main(int argc, const char * argv[])
 	++i;
     }
 
-    map<int64_t, size_t> score_freq;
+    map<int64_t, Seed> score_freq;
     //unordered_map<kmer, vector<size_t>, kmerHash> all_seeds;
     int j;
     
@@ -93,8 +111,10 @@ int main(int argc, const char * argv[])
     sprintf(filename+i, "score_freq-n%d-r%d.txt", n, r>>1);
     FILE* fout = fopen(filename, "w");
     
+    char buf[k+1];
+
     for(const auto& x : score_freq){
-	fprintf(fout, "%ld %zu\n", x.first, x.second);
+	fprintf(fout, "%ld %.*s %zu\n", x.first, k, decode(x.second.s, k, buf), x.second.ct);
     }
     fclose(fout);
     
