@@ -32,8 +32,8 @@
 
 struct SeedInfo{
     int read_id;
-    int st, ed;
-    int window_st;
+    uint64_t st, ed;
+    uint64_t window_st;
     int strand;
     SeedInfo(int id, int s, int t, int w, int p):
 	read_id(id), st(s), ed(t), window_st(w), strand(p){}
@@ -46,22 +46,25 @@ int loadWindowSeedsWithInfo(const char* filename, const int read_id,
     kmer s;
     int k;
     int strand = 0, pre_w = -1;
-    int loc[3];//st, ed, windowst
+    uint64_t loc[2];//st, index
     ret = fread(&k, sizeof(k), 1, fin);
     while(true){
 	ret = fread(&s, sizeof(s), 1, fin);
 	if(ret != 1) break;
+	//skip score and psi
+	fseek(fin, sizeof(int64_t)+sizeof(short), SEEK_CUR);
+	
+	ret = fread(loc, sizeof(uint64_t), 2, fin);
 
-	ret = fread(loc, sizeof(int), 3, fin);
-
-	if(loc[2] < pre_w){//start reading seeds from the opposite strand
+	if(loc[0] < pre_w){//start reading seeds from the opposite strand
 	    strand = 1;
 	}
-	pre_w = loc[2];
+	pre_w = loc[0];
 	
 	auto result = all_seeds.emplace(s, std::vector<SeedInfo>());
 	//result.first is either newly inserted or a previous existing entry
-	result.first->second.emplace_back(read_id, loc[0], loc[1], loc[2], strand);
+	//ed is not used so just store index
+	result.first->second.emplace_back(read_id, loc[0], loc[1], loc[0], strand);
     }
     if(ferror(fin)){
 	fprintf(stderr, "Error reading %s\n", filename);
@@ -181,20 +184,20 @@ int doChaining(const std::vector<SeedMatch>& m, const int n,
 
 int main(int argc, const char * argv[])    
 {   
-    if(argc < 8){
-	fprintf(stderr, "Usage: subseq2Chaining.out read_id1 read_id2 n max_gap band_width num_results dir_1 ... dir_n\n**WARNING**: output to stdout!\nread_id1\nread_id2\nbest_score\nnum_matches_on_chain\ntotal_num_unique_matches\nst_on_read1\ned_on_read1\nst_on_read2\ned_on_read2\n");
+    if(argc < 9){
+	fprintf(stderr, "Usage: subseq2Chaining.out read_id1 read_id2 n file_ext max_gap band_width num_results dir_1 ... dir_n\n**WARNING**: output to stdout!\nread_id1\nread_id2\nbest_score\nnum_matches_on_chain\ntotal_num_unique_matches\nst_on_read1\ned_on_read1\nst_on_read2\ned_on_read2\n");
 	return 1;
     }
 
     int x = atoi(argv[1]);
     int y = atoi(argv[2]);
     int n = atoi(argv[3]);
-    int max_gap = atoi(argv[4]);
-    int band_width = atoi(argv[5]);
-    int num_results = atoi(argv[6]);
+    int max_gap = atoi(argv[5]);
+    int band_width = atoi(argv[6]);
+    int num_results = atoi(argv[7]);
     
-    if(argc != 7+num_results){
-	fprintf(stderr, "Indicate %d sets of results, only provided %d directories\n", num_results, argc-7);
+    if(argc != 8+num_results){
+	fprintf(stderr, "Indicate %d sets of results, only provided %d directories\n", num_results, argc-8);
 	return 1;
     }
 
@@ -211,7 +214,7 @@ int main(int argc, const char * argv[])
     std::vector<SeedMatch> same;
     std::vector<SeedMatch> opposite;
 
-    for(i=7; i<argc; ++i){
+    for(i=8; i<argc; ++i){
 	int l = strlen(argv[i]);
 	memcpy(dirname, argv[i], l);
 	if(dirname[l-1] != '/'){
@@ -221,14 +224,14 @@ int main(int argc, const char * argv[])
 
 	std::unordered_map<kmer, std::vector<SeedInfo>, kmerHash> seeds;
 	
-	sprintf(dirname+l, "%d.subseqseed2w", x);	
+	sprintf(dirname+l, "%d.%s", x, argv[4]);	
 	if(stat(dirname, &test_file) != 0){
 	    fprintf(stderr, "Stopped, cannot find file %s\n", dirname);
 	    break;
 	}
 	loadWindowSeedsWithInfo(dirname, x, seeds);
 
-	sprintf(dirname+l, "%d.subseqseed2w", y);
+	sprintf(dirname+l, "%d.%s", y, argv[4]);
 	if(stat(dirname, &test_file) != 0){
 	    fprintf(stderr, "cannot find file %s\n", dirname);
 	    break;
