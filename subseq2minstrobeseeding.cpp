@@ -742,12 +742,111 @@ void subseq2minstrobeseeding::combine(std::string s, size_t start, size_t end, D
 
 } // end of combine
 
+/*
+  Minimizer implementation from minimap2.
+  !!This hash function can only handle kmers of length <= 32!!
+*/
+static inline uint64_t hash64(kmer s, uint64_t mask)
+{
+    uint64_t key = (uint64_t) s;
+    key = (~key + (key << 21)) & mask; // key = (key << 21) - key - 1;
+    key = key ^ key >> 24;
+    key = ((key + (key << 3)) + (key << 8)) & mask; // key * 265
+    key = key ^ key >> 14;
+    key = ((key + (key << 2)) + (key << 4)) & mask; // key * 21
+    key = key ^ key >> 28;
+    key = (key + (key << 31)) & mask;
+    return key;
+}
+
+struct MMEntry{
+    size_t st;
+    uint64_t hashval;
+    MMEntry(int st, uint64_t hashval): st(st), hashval(hashval){}
+};
+
+/*
+  Subsampling all_seeds by prek minimizers in mm_w.
+*/
+static void minimizerSketchSeeds(const std::string& s,
+				 const int k, const int w, const int num_valid,
+				 const std::vector<std::vector<seed>>& all_seeds,
+				 std::vector<std::vector<seed>>& seeds){
+    //get minimizer positions
+    std::vector<size_t> mm_pos;
+    kmer mask = (1ULL<<(k<<1)) - 1;
+    size_t len = s.length();
+    std::list<MMEntry> candidates;
+    size_t j = len - k + 1;
+    j = (j < w ? j : w);
+
+    char cur[k];
+    s.copy(cur, k, 0);
+    kmer now = encode(cur, k);
+    uint64_t hashval = hash64(now, mask);
+
+    candidates.push_back(MMEntry(0, hashval));
+
+    for(size_t i=1; i<j; ++i){
+	now = (now<<2) & mask;
+	now |= alphabetIndex(s[i+k-1]);
+	hashval = hash64(now, mask);
+
+	while(!candidates.empty() && hashval<=candidates.back().hashval){
+	    candidates.pop_back();
+	}
+	candidates.push_back(MMEntry(i, hashval));
+    }
+
+    for(size_t i=w; i<= len - k; ++i){
+	while(!candidates.empty() && candidates.front().st < i-w){
+	    candidates.pop_front();
+	}
+
+	if(mm_pos.empty() || candidates.front().st != mm_pos.back()){
+	    mm_pos.push_back(candidates.front().st);
+	}
+
+	now = (now<<2) & mask;
+	now |= alphabetIndex(s[i+k-1]);
+	hashval = hash64(now, mask);
+
+	while(!candidates.empty() && hashval<=candidates.back().hashval){
+	    candidates.pop_back();
+	}
+
+	candidates.push_back(MMEntry(i, hashval));
+    }
+
+    while(!candidates.empty() && candidates.front().st <= len - k - w){
+	candidates.pop_front();
+    }
+
+    if(mm_pos.empty() || candidates.front().st != mm_pos.back()){
+	mm_pos.push_back(candidates.front().st);
+    }
+
+    //subsample seeds
+    std::vector<size_t> it(num_valid, 0);
+    for(size_t st : mm_pos){
+	for(int i=0; i<num_valid; ++i){
+	    size_t& c = it[i];
+	    while(c < all_seeds[i].size() && all_seeds[i][c].st < st) ++c;
+	    if(c < all_seeds[i].size() && all_seeds[i][c].st == st){
+		seeds[i].push_back(all_seeds[i][c]);
+	    }
+	}
+    }
+}
+
 void subseq2minstrobeseeding::getSubseq2Seeds(std::string s, DPCell* dp, DPCell* revdp, int* h, int* revh,
 					   std::vector<std::vector<seed>>& seeds)
 {	
     int len = s.length();
 
     int st = 0, en = 0;
+
+    std::vector<std::vector<seed>> all_seeds(num_valid, std::vector<seed>(0));
 
     while(en < len - 1)
     {
@@ -757,10 +856,11 @@ void subseq2minstrobeseeding::getSubseq2Seeds(std::string s, DPCell* dp, DPCell*
 
 	DP(s, st, en, dp, h);
 	revDP(s, st, en, revdp, revh);
-	combine(s, st, en, dp, revdp, seeds);
+	combine(s, st, en, dp, revdp, all_seeds);
 
 	st = en - 2 * n  - k + 2;
     }
+    minimizerSketchSeeds(s, prek, mm_w, num_valid, all_seeds, seeds);
 }
 
 double subseq2minstrobeseeding::getSeeds(std::string& s, const size_t s_idx,

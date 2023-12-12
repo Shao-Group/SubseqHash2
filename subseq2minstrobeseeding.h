@@ -11,6 +11,7 @@
 #include <inttypes.h>
 #include <algorithm>
 #include <vector>
+#include <list>
 
 #ifndef _SUBSEQ2MINSTROBESEEDING_H
 #define _SUBSEQ2MINSTROBESEEDING_H
@@ -52,7 +53,7 @@ private:
     int d;
     int dim1, dim2, dim3;
     int chunk_size = 500;
-    int w, prek;
+    int w, prek, mm_w;
 
     int dpIndex(int d1, int d2, int d3, int d4);
     int hIndex(int d2, int d3, int d4);
@@ -62,7 +63,7 @@ private:
 	
 public:
 
-    subseq2minstrobeseeding(int n1, int k1, int d1, int subsample, int w1, int prek1): seeding(n1, k1){
+    subseq2minstrobeseeding(int n1, int k1, int d1, int subsample, int w1, int prek1, int mm_w1): seeding(n1, k1){
 	d = d1;
 	num_valid = subsample;
 	dim3 = d;
@@ -70,13 +71,14 @@ public:
 	dim1 = (n+1) * dim2;
 	w = w1;
 	prek = prek1;
+	mm_w = mm_w1;
     }
 
     subseq2minstrobeseeding(int n1, int k1, int d1, int subsample,
-			    int w1, int prek1,
+			    int w1, int prek1, int mm_w1,
 			    const char* table_filename):
 	seeding(n1, k1), num_valid(subsample),
-	d(d1), dim3(d), w(w1), prek(prek1){
+	d(d1), dim3(d), w(w1), prek(prek1), mm_w(mm_w1){
 	dim2 = (k+1) * dim3;
 	dim1 = (n+1) * dim2;
 	init(table_filename);
