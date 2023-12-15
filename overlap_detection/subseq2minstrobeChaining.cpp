@@ -179,17 +179,19 @@ int doChaining(const std::vector<SeedMatch>& m, const int n,
 
 int main(int argc, const char * argv[])    
 {   
-    if(argc != 9){
-	fprintf(stderr, "Usage: subseq2Chaining.out read_id1 read_id2 n max_gap band_width num_results dir file_ext\n**WARNING**: output to stdout!\nread_id1\nread_id2\nbest_score\nnum_matches_on_chain\ntotal_num_unique_matches\nst_on_read1\ned_on_read1\nst_on_read2\ned_on_read2\n");
+    if(argc != 11){
+	fprintf(stderr, "Usage: subseq2Chaining.out read_id1 read_len1 read_id2 read_len2 n max_gap band_width num_results dir file_ext\n**WARNING**: output to stdout!\nread_id1\nread_id2\nbest_score\nnum_matches_on_chain\ntotal_num_unique_matches\nst_on_read1\ned_on_read1\nst_on_read2\ned_on_read2\n");
 	return 1;
     }
 
     int x = atoi(argv[1]);
-    int y = atoi(argv[2]);
-    int n = atoi(argv[3]);
-    int max_gap = atoi(argv[4]);
-    int band_width = atoi(argv[5]);
-    int num_results = atoi(argv[6]);
+    int len_x = atoi(argv[2]);
+    int y = atoi(argv[3]);
+    int len_y = atoi(argv[4]);
+    int n = atoi(argv[5]);
+    int max_gap = atoi(argv[6]);
+    int band_width = atoi(argv[7]);
+    int num_results = atoi(argv[8]);
 
     if(x>y){
 	int tmp = x;
@@ -200,8 +202,8 @@ int main(int argc, const char * argv[])
     int i;
     char dirname[200];
     struct stat test_file;
-    int l = strlen(argv[7]);
-    memcpy(dirname, argv[7], l);
+    int l = strlen(argv[9]);
+    memcpy(dirname, argv[9], l);
     if(dirname[l-1] != '/'){
 	dirname[l] = '/';
 	++l;
@@ -213,28 +215,28 @@ int main(int argc, const char * argv[])
     for(i=0; i<(num_results<<1); i+=2){
 	std::unordered_map<kmer, std::vector<SeedInfo>, kmerHash> seeds;
 	
-	sprintf(dirname+l, "%d-%d.%s", i, x, argv[8]);	
+	sprintf(dirname+l, "%d-%d.%s", i, x, argv[10]);	
 	if(stat(dirname, &test_file) != 0){
 	    fprintf(stderr, "Stopped, cannot find file %s\n", dirname);
 	    break;
 	}
 	loadWindowSeedsWithInfo(dirname, x, 0, seeds);
 
-	sprintf(dirname+l, "%d-%d.%s", i+1, x, argv[8]);	
+	sprintf(dirname+l, "%d-%d.%s", i+1, x, argv[10]);	
 	if(stat(dirname, &test_file) != 0){
 	    fprintf(stderr, "Stopped, cannot find file %s\n", dirname);
 	    break;
 	}
 	loadWindowSeedsWithInfo(dirname, x, 1, seeds);
 
-	sprintf(dirname+l, "%d-%d.%s", i, y, argv[8]);
+	sprintf(dirname+l, "%d-%d.%s", i, y, argv[10]);
 	if(stat(dirname, &test_file) != 0){
 	    fprintf(stderr, "cannot find file %s\n", dirname);
 	    break;
 	}
 	loadWindowSeedsWithInfo(dirname, y, 0, seeds);
 
-	sprintf(dirname+l, "%d-%d.%s", i+1, y, argv[8]);
+	sprintf(dirname+l, "%d-%d.%s", i+1, y, argv[10]);
 	if(stat(dirname, &test_file) != 0){
 	    fprintf(stderr, "cannot find file %s\n", dirname);
 	    break;
@@ -245,18 +247,20 @@ int main(int argc, const char * argv[])
 	    size_t l = z.second.size();
 	    for(size_t a=0; a<l; ++a){
 		const SeedInfo& c1 = z.second[a];
+		int c1_st = (c1.strand==0? c1.window_st : (c1.read_id==x? len_x-1-c1.window_st : len_y-1-c1.window_st));
 		for(size_t b=a+1; b<l; ++b){
 		    const SeedInfo& c2 = z.second[b];
+		    int c2_st = (c2.strand==0? c2.window_st : (c2.read_id==x? len_x-1-c2.window_st : len_y-1-c2.window_st));
 		    if(c1.read_id < c2.read_id){
 			if(c1.strand == c2.strand)
-			    same.emplace_back(c1.window_st, c2.window_st);
+			    same.emplace_back(c1_st, c2_st);
 			else
-			    opposite.emplace_back(c1.window_st, -n-c2.window_st);
+			    opposite.emplace_back(c1_st, -n-c2_st);
 		    }else if(c1.read_id > c2.read_id){
 			if(c1.strand == c2.strand)
-			    same.emplace_back(c2.window_st, c1.window_st);
+			    same.emplace_back(c2_st, c1_st);
 			else
-			    opposite.emplace_back(c2.window_st, -n-c1.window_st);
+			    opposite.emplace_back(c2_st, -n-c1_st);
 		    }
 		}
 	    }
