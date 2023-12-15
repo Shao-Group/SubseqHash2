@@ -33,14 +33,13 @@
 struct SeedInfo{
     int read_id;
     uint64_t st, ed;
-    uint64_t window_st;
     int strand;
-    SeedInfo(int id, int s, int t, int w, int p):
-	read_id(id), st(s), ed(t), window_st(w), strand(p){}
+    SeedInfo(int id, int s, int t, int p):
+	read_id(id), st(s), ed(t), strand(p){}
 };
 
 int loadWindowSeedsWithInfo(const char* filename, const int read_id,
-			    const int strand,
+			    const int strand, const uint64_t read_len, const int seed_len,
 			    std::unordered_map<kmer, std::vector<SeedInfo>, kmerHash>& all_seeds){
     FILE* fin = fopen(filename, "rb");
     size_t ret = 1;
@@ -58,8 +57,12 @@ int loadWindowSeedsWithInfo(const char* filename, const int read_id,
 	
 	auto result = all_seeds.emplace(s, std::vector<SeedInfo>());
 	//result.first is either newly inserted or a previous existing entry
-	//ed is not used so just store index
-	result.first->second.emplace_back(read_id, loc[0], loc[1], loc[0], strand);
+	if(strand == 0){
+	    result.first->second.emplace_back(read_id, loc[0], loc[0]+seed_len-1, strand);
+	}else{
+	    result.first->second.emplace_back(read_id, read_len-1-loc[0],
+					      read_len-1-(loc[0]-seed_len+1), strand);
+	}
     }
     if(ferror(fin)){
 	fprintf(stderr, "Error reading %s\n", filename);
@@ -185,9 +188,9 @@ int main(int argc, const char * argv[])
     }
 
     int x = atoi(argv[1]);
-    int len_x = atoi(argv[2]);
+    int x_len = atoi(argv[2]);
     int y = atoi(argv[3]);
-    int len_y = atoi(argv[4]);
+    int y_len = atoi(argv[4]);
     int n = atoi(argv[5]);
     int max_gap = atoi(argv[6]);
     int band_width = atoi(argv[7]);
@@ -220,47 +223,45 @@ int main(int argc, const char * argv[])
 	    fprintf(stderr, "Stopped, cannot find file %s\n", dirname);
 	    break;
 	}
-	loadWindowSeedsWithInfo(dirname, x, 0, seeds);
+	loadWindowSeedsWithInfo(dirname, x, 0, x_len, n, seeds);
 
 	sprintf(dirname+l, "%d-%d.%s", i+1, x, argv[10]);	
 	if(stat(dirname, &test_file) != 0){
 	    fprintf(stderr, "Stopped, cannot find file %s\n", dirname);
 	    break;
 	}
-	loadWindowSeedsWithInfo(dirname, x, 1, seeds);
+	loadWindowSeedsWithInfo(dirname, x, 1, x_len, n, seeds);
 
 	sprintf(dirname+l, "%d-%d.%s", i, y, argv[10]);
 	if(stat(dirname, &test_file) != 0){
 	    fprintf(stderr, "cannot find file %s\n", dirname);
 	    break;
 	}
-	loadWindowSeedsWithInfo(dirname, y, 0, seeds);
+	loadWindowSeedsWithInfo(dirname, y, 0, y_len, n, seeds);
 
 	sprintf(dirname+l, "%d-%d.%s", i+1, y, argv[10]);
 	if(stat(dirname, &test_file) != 0){
 	    fprintf(stderr, "cannot find file %s\n", dirname);
 	    break;
 	}
-	loadWindowSeedsWithInfo(dirname, y, 1, seeds);
+	loadWindowSeedsWithInfo(dirname, y, 1, y_len, n, seeds);
 
 	for(const auto& z : seeds){
 	    size_t l = z.second.size();
 	    for(size_t a=0; a<l; ++a){
 		const SeedInfo& c1 = z.second[a];
-		int c1_st = (c1.strand==0? c1.window_st : (c1.read_id==x? len_x-1-c1.window_st : len_y-1-c1.window_st));
 		for(size_t b=a+1; b<l; ++b){
 		    const SeedInfo& c2 = z.second[b];
-		    int c2_st = (c2.strand==0? c2.window_st : (c2.read_id==x? len_x-1-c2.window_st : len_y-1-c2.window_st));
 		    if(c1.read_id < c2.read_id){
 			if(c1.strand == c2.strand)
-			    same.emplace_back(c1_st, c2_st);
+			    same.emplace_back(c1.st, c2.st);
 			else
-			    opposite.emplace_back(c1_st, -n-c2_st);
+			    opposite.emplace_back(c1.st, 1-n-c2.st);
 		    }else if(c1.read_id > c2.read_id){
 			if(c1.strand == c2.strand)
-			    same.emplace_back(c2_st, c1_st);
+			    same.emplace_back(c2.st, c1.st);
 			else
-			    opposite.emplace_back(c2_st, -n-c1_st);
+			    opposite.emplace_back(c2.st, 1-n-c1.st);
 		    }
 		}
 	    }

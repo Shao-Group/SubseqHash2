@@ -49,7 +49,7 @@ int loadWindowSeedsWithInfo(const char* filename, const int read_id,
 	    result.first->second.emplace_back(read_id, loc[0], loc[0]+seed_len-1, strand);
 	}else{
 	    result.first->second.emplace_back(read_id, read_len-1-loc[0],
-					      read_len-1-loc[0]-seed_len+1, strand);
+					      read_len-1-(loc[0]-seed_len+1), strand);
 	}
     }
     if(ferror(fin)){
