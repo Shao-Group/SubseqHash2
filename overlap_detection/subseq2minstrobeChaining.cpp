@@ -285,15 +285,15 @@ int main(int argc, const char * argv[])
 				 &opposite_nodes_on_chain, opposite_pos);
 
     if(same_sc > opposite_sc){
-	printf("%d %d %d %zu %zu %d %d %d %d\n", x, y,
+	printf("%d %d %d %zu %zu %d %d %d %d %d %d\n", x, y,
 		same_sc, same_nodes_on_chain,
 	       same.size()+opposite.size(), same_pos[0], same_pos[1],
-	       same_pos[2], same_pos[3]);
+	       same_pos[2], same_pos[3], x_len, y_len);
     }else{
-	printf("%d %d %d %zu %zu %d %d %d %d\n", x, y,
+	printf("%d %d %d %zu %zu %d %d %d %d %d %d\n", x, y,
 		opposite_sc, opposite_nodes_on_chain,
 	       same.size()+opposite.size(), opposite_pos[0], opposite_pos[1],
-	       opposite_pos[2], opposite_pos[3]);
+	       opposite_pos[2], opposite_pos[3], x_len, y_len);
     }
 
     return 0;
