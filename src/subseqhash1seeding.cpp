@@ -15,16 +15,16 @@ void subseqhash1seeding::init(const char* table_filename)
     for(int i = 0; i < k; i++)
 		for(int j = 0; j < 4; j++)
 	    	for(int q = 0; q < d; q++)
-				fscanf(filein, "%lf ", &A[i][j][q]);
+				(void)!fscanf(filein, "%lf ", &A[i][j][q]);
 
     for(int i = 0; i < k; i++)
 		for(int j = 0; j < 4; j++)
 	    	for(int q = 0; q < d; q++)
-				fscanf(filein, "%d,%d", &B1[i][j][q], &B2[i][j][q]);
+				(void)!fscanf(filein, "%d,%d", &B1[i][j][q], &B2[i][j][q]);
 
     for(int i = 0; i < k; i++)
 		for(int j = 0; j < 4; j++)
-	    	fscanf(filein, "%d", &C[i][j]);
+	    	(void)!fscanf(filein, "%d", &C[i][j]);
 }
 
 void subseqhash1seeding::DP(std::string s, DPCell* dp, int* h, std::vector<seed>& seeds)

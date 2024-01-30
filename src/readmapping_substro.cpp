@@ -241,9 +241,9 @@ int main(int argc, const char * argv[])
 		    while(ret == 1)
 		    {
 				ret = fread(&hashval, sizeof(int64_t), 1, fin);
-				fread(&kk, sizeof(kmer), 1, fin);
-				fread(&st, sizeof(uint64_t), 1, fin);
-				fread(&index, sizeof(uint64_t), 1, fin);
+				(void)!fread(&kk, sizeof(kmer), 1, fin);
+				(void)!fread(&st, sizeof(uint64_t), 1, fin);
+				(void)!fread(&index, sizeof(uint64_t), 1, fin);
 
 				if(hashval == 0 && st == 0 && index == 0)
 					break;
@@ -281,9 +281,9 @@ int main(int argc, const char * argv[])
 		    while(ret == 1)
 		    {
 				ret = fread(&hashval, sizeof(int64_t), 1, fin);
-				fread(&kk, sizeof(kmer), 1, fin);
-				fread(&st, sizeof(uint64_t), 1, fin);
-				fread(&index, sizeof(uint64_t), 1, fin);
+				(void)!fread(&kk, sizeof(kmer), 1, fin);
+				(void)!fread(&st, sizeof(uint64_t), 1, fin);
+				(void)!fread(&index, sizeof(uint64_t), 1, fin);
 
 				if(hashval == 0 && st == 0 && index == 0)
 					break;

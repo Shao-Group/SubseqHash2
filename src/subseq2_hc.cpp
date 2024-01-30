@@ -60,47 +60,47 @@ void init(string path)
     for(int i = 0; i < b; i++)
 		for(int j = 0; j < 4; j++)
 	    	for(int q = 0; q < d; q++)
-				fscanf(filein, "%" SCNd64, &A[i][j][q]);
+				(void)!fscanf(filein, "%" SCNd64, &A[i][j][q]);
 
     for(int i = 0; i < b; i++)
 		for(int j = 0; j < 4; j++)
 	    	for(int q = 0; q < d; q++)
-				fscanf(filein, "%d,%d", &B1[i][j][q], &B2[i][j][q]);
+				(void)!fscanf(filein, "%d,%d", &B1[i][j][q], &B2[i][j][q]);
 
     for(int i = 0; i < b; i++)
 		for(int j = 0; j < 4; j++)
-	    	fscanf(filein, "%d", &C1[i][j]);
+	    	(void)!fscanf(filein, "%d", &C1[i][j]);
 
     for(int i = 0; i < b; i++)
 		for(int j = 0; j < 4; j++)
 	    	for(int q = 0; q < d; q++)
-				fscanf(filein, "%" SCNd64, &revA[i][j][q]);
+				(void)!fscanf(filein, "%" SCNd64, &revA[i][j][q]);
 
     for(int i = 0; i < b; i++)
 		for(int j = 0; j < 4; j++)
 	   		for(int q = 0; q < d; q++)
-				fscanf(filein, "%d,%d", &revB1[i][j][q], &revB2[i][j][q]);
+				(void)!fscanf(filein, "%d,%d", &revB1[i][j][q], &revB2[i][j][q]);
 
     for(int i = 0; i < b; i++)
 		for(int j = 0; j < 4; j++)
-	    	fscanf(filein, "%d", &C2[i][j]);
+	    	(void)!fscanf(filein, "%d", &C2[i][j]);
 	
     for(int i = 0; i < b; i++)
 		for(int j = 0; j < 4; j++)
-	    	fscanf(filein, "%d,%d", &combine1[i][j], &combine2[i][j]);
+	    	(void)!fscanf(filein, "%d,%d", &combine1[i][j], &combine2[i][j]);
 	
 
     for(int i = 0; i < b; i++)
 		for(int j = 0; j < 4; j++)
-	    	fscanf(filein, "%" SCNd64, &A3[i][j]);
+	    	(void)!fscanf(filein, "%" SCNd64, &A3[i][j]);
 	
     for(int i = 0; i < b; i++)
 		for(int j = 0; j < 4; j++)
-	   		fscanf(filein, "%d ", &combine3[i][j]);
+	   		(void)!fscanf(filein, "%d ", &combine3[i][j]);
 	
     for(int i = 0; i < b; i++)
 		for(int j = 0; j < 4; j++)
-	    	fscanf(filein, "%d", &C3[i][j]);
+	    	(void)!fscanf(filein, "%d", &C3[i][j]);
 
 
     int x;
@@ -108,7 +108,7 @@ void init(string path)
 
     for(int i = 0; i < b; i++)
     {
-		fscanf(filein, "%d", &x);
+		(void)!fscanf(filein, "%d", &x);
 		if(i < subsample)
 			valid[x] = i+1;
     }

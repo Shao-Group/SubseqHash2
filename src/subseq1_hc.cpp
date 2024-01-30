@@ -40,16 +40,16 @@ void init(string path)
 	    for(int i = 0; i < b; i++)
 			for(int j = 0; j < 4; j++)
 		    	for(int q = 0; q < p; q++)
-					fscanf(filein, "%lf ", &A[ri][i][j][q]);
+					(void)!fscanf(filein, "%lf ", &A[ri][i][j][q]);
 
 	    for(int i = 0; i < b; i++)
 			for(int j = 0; j < 4; j++)
 		    	for(int q = 0; q < p; q++)
-					fscanf(filein, "%d,%d", &B1[ri][i][j][q], &B2[ri][i][j][q]);
+					(void)!fscanf(filein, "%d,%d", &B1[ri][i][j][q], &B2[ri][i][j][q]);
 
 	    for(int i = 0; i < b; i++)
 			for(int j = 0; j < 4; j++)
-		    	fscanf(filein, "%d", &C[ri][i][j]);
+		    	(void)!fscanf(filein, "%d", &C[ri][i][j]);
 	}
 }
 
