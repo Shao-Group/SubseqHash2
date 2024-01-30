@@ -38,6 +38,18 @@ kmer revComp(kmer s, int k)
     return r;
 }
 
+std::string revComp(const std::string& s){
+    std::string r;
+    size_t len = s.length();
+    r.reserve(len);
+
+    for(int i=len-1; i>=0; --i){
+	r.push_back(ALPHABET[ALPHABETSIZE - alphabetIndex(s[i]) - 1]);
+    }
+
+    return r;
+}
+
 ssh_index* index_build(std::vector<seed>& seeds)
 {
 	ssh_index* ht = new ssh_index;
@@ -162,8 +174,8 @@ void loadSeeds(const char* filename, std::vector<seed> &seeds)
     while(ret == 1)
     {
 		ret = fread(&hashval, sizeof(uint64_t), 1, fin);
-		fread(&st, sizeof(uint64_t), 1, fin);
-		fread(&index, sizeof(uint64_t), 1, fin);
+		ret = fread(&st, sizeof(uint64_t), 1, fin);
+		ret = fread(&index, sizeof(uint64_t), 1, fin);
 
 		if(!ret)
 			break;
@@ -202,9 +214,9 @@ void loadSeedsStr(const char* filename, std::vector<seed> &seeds, int k)
     while(ret == 1)
     {
 		ret = fread(&hashval, sizeof(uint64_t), 1, fin);
-		fread(&kk, sizeof(kmer), 1, fin);
-		fread(&st, sizeof(uint64_t), 1, fin);
-		fread(&index, sizeof(uint64_t), 1, fin);
+		ret = fread(&kk, sizeof(kmer), 1, fin);
+		ret = fread(&st, sizeof(uint64_t), 1, fin);
+		ret = fread(&index, sizeof(uint64_t), 1, fin);
 
 		if(!ret)
 			break;

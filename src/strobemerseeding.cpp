@@ -49,3 +49,30 @@ void strobemerseeding::get_strobemers(std::string str, std::vector<std::vector<s
         }
     }
 }
+
+double strobemerseeding::getSeeds(std::string& s, const size_t s_idx,
+				  const char* output_dir, const int dir_len){
+    std::vector<std::vector<seed>> seeds(seednum);
+    get_strobemers(s, seeds);
+    int seed_len = k*w;
+
+    double density = 0.0;
+    char output_filename[500];
+    for(int i=0; i<seednum; ++i){
+	sprintf(output_filename, "%.*s/%d-%zu.strobemerseed",
+		dir_len, output_dir, i<<1, s_idx);
+	saveSeeds(output_filename, seed_len, seeds[i]);
+	density += seeds[i].size();
+	seeds[i].clear();
+    }
+
+    get_strobemers(revComp(s), seeds);
+    for(int i=0; i<seednum; ++i){
+	sprintf(output_filename, "%.*s/%d-%zu.strobemerseed",
+		dir_len, output_dir, (i<<1)+1, s_idx);
+	saveSeeds(output_filename, seed_len, seeds[i]);
+	density += seeds[i].size();
+    }
+
+    return density/(s.length()*seednum*2);
+}

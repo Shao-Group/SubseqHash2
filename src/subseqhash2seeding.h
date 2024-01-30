@@ -28,64 +28,72 @@ class subseqhash2seeding: private seeding
 
 private:
 
-	int64_t A[MAXK][ALPHABETSIZE][MAXD];
-	int B1[MAXK][ALPHABETSIZE][MAXD];
-	int B2[MAXK][ALPHABETSIZE][MAXD];
+    int64_t A[MAXK][ALPHABETSIZE][MAXD];
+    int B1[MAXK][ALPHABETSIZE][MAXD];
+    int B2[MAXK][ALPHABETSIZE][MAXD];
 
-	int64_t revA[MAXK][ALPHABETSIZE][MAXD];
-	int revB1[MAXK][ALPHABETSIZE][MAXD];
-	int revB2[MAXK][ALPHABETSIZE][MAXD];
+    int64_t revA[MAXK][ALPHABETSIZE][MAXD];
+    int revB1[MAXK][ALPHABETSIZE][MAXD];
+    int revB2[MAXK][ALPHABETSIZE][MAXD];
 
-	int64_t A3[MAXK][ALPHABETSIZE];
+    int64_t A3[MAXK][ALPHABETSIZE];
 
-	int combine1[MAXK][ALPHABETSIZE];
-	int combine2[MAXK][ALPHABETSIZE];
-	int combine3[MAXK][ALPHABETSIZE];
+    int combine1[MAXK][ALPHABETSIZE];
+    int combine2[MAXK][ALPHABETSIZE];
+    int combine3[MAXK][ALPHABETSIZE];
 
-	int C1[MAXK][ALPHABETSIZE];
-	int C2[MAXK][ALPHABETSIZE];
-	int C3[MAXK][ALPHABETSIZE]; 
+    int C1[MAXK][ALPHABETSIZE];
+    int C2[MAXK][ALPHABETSIZE];
+    int C3[MAXK][ALPHABETSIZE]; 
 
-	int num_valid = 0;
-	int valid[MAXK] = {0};
+    int num_valid = 0;
+    int valid[MAXK] = {0};
 
-	int d;
-	int dim1, dim2, dim3;
-	int chunk_size = 500;
-	int64_t threshold;
+    int d;
+    int dim1, dim2, dim3;
+    int chunk_size = 500;
+    int64_t threshold;
 
-	int dpIndex(int d1, int d2, int d3, int d4);
-	int hIndex(int d2, int d3, int d4);
-	void DP(std::string s, size_t start, size_t end, DPCell* dp, int* h);
-	void revDP(std::string s, size_t start, size_t end, DPCell* revdp, int* revh);
-	void combine(std::string s, size_t start, size_t end, DPCell* dp, DPCell* revdp, std::vector<std::vector<seed>>& seeds);
+    int dpIndex(int d1, int d2, int d3, int d4);
+    int hIndex(int d2, int d3, int d4);
+    void DP(std::string s, size_t start, size_t end, DPCell* dp, int* h);
+    void revDP(std::string s, size_t start, size_t end, DPCell* revdp, int* revh);
+    void combine(std::string s, size_t start, size_t end, DPCell* dp, DPCell* revdp, std::vector<std::vector<seed>>& seeds);
 
 public:
+    subseqhash2seeding(int n1, int k1, int d1, int subsample, int64_t threshold1 = ((int64_t)1<<63)): seeding(n1, k1){
+	d = d1;
+	threshold = threshold1;
+	num_valid = subsample;
+	dim3 = d;
+	dim2 = (k+1) * dim3;
+	dim1 = (n+1) * dim2;
+    }
 
-	subseqhash2seeding(int n1, int k1, int d1, int subsample, int64_t threshold1 = ((int64_t)1<<63)): seeding(n1, k1)
-	{
-			d = d1;
-	    threshold = threshold1;
-	    num_valid = subsample;
-	    dim3 = d;
-	    dim2 = (k+1) * dim3;
-	    dim1 = (n+1) * dim2;
-	}
+    subseqhash2seeding(int n1, int k1, int d1, int subsample,
+		       const char* table_filename,
+		       int64_t threshold1 = ((int64_t)1<<63)):
+	seeding(n1, k1), num_valid(subsample),
+	d(d1), dim3(d1), threshold(threshold1){
+	dim2 = (k+1) * dim3;
+	dim1 = (n+1) * dim2;
+	init(table_filename);
+    }
 
-	void init(const char* table_filename);
-	void getSubseq2Seeds(std::string s, DPCell* dp, DPCell* revdp, int* h, int* revh,
-			     std::vector<std::vector<seed>>& seeds);
+    void init(const char* table_filename);
+    void getSubseq2Seeds(std::string s, DPCell* dp, DPCell* revdp, int* h, int* revh, std::vector<std::vector<seed>>& seeds);
+    double getSeeds(std::string& s, const size_t s_idx,
+		    const char* output_dir, const int dir_len,
+		    DPCell* dp, DPCell* revdp, int* h, int*revh);
 	void writeSubseq2Seeds(std::string s, DPCell* dp, DPCell* revdp, int* h, int* revh,
 		     std::vector<std::vector<seed>>& seeds, std::vector<FILE*> fout);
 
-	int getChunkSize()
-	{
-		return chunk_size;
-	}	
+    int getChunkSize() const{
+	return chunk_size;
+    }	
 
-	int getNumPerWindow()
-	{
-		return num_valid;
-	}
+    int getNumPerWindow() const{
+	return num_valid;
+    }
 };
 #endif

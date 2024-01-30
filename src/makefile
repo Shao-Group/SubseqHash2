@@ -2,7 +2,7 @@ CC=gcc
 CPP=g++
 CFLAGS+= -m64 -g -Wall -std=c++11
 LIBS=
-ALLDEP:= $(patsubst %.h,%.o,$(wildcard *.h)) ./strobemer/index.o
+ALLDEP:= $(patsubst %.h,%.o,$(filter-out seedfactory.h, $(wildcard *.h))) seedfactory.h ./strobemer/index.o
 
 .PHONY: all
 all: strobemer $(patsubst %.cpp,%.out,$(filter-out $(patsubst %.h,%.cpp,$(wildcard *.h)), $(wildcard *.cpp)))
@@ -19,7 +19,7 @@ product: strobemer $(ALLDEP) $(patsubst %.cpp,%.out,$(filter-out $(patsubst %.o,
 	$(CPP) $(CFLAGS) -MMD -c ./strobemer/index.cpp -o ./strobemer/index.o
 
 %.out: %.cpp $(ALLDEP)
-	$(CPP) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CPP) $(CFLAGS) -o $@ $(filter-out %.h, $^) $(LIBS)
 %.out: %.c $(ALLDEP)
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 %.o: %.cpp %.h makefile

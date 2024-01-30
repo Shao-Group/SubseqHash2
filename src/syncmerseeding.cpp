@@ -66,3 +66,24 @@ void syncmerseeding::get_syncmers(std::string str, std::vector<seed>& seeds)
         }
     }
 }
+
+double syncmerseeding::getSeeds(std::string& s, const size_t s_idx,
+				const char* output_dir, const int dir_len){
+    std::vector<seed> seeds;
+    get_syncmers(s, seeds);
+    
+    char output_filename[500];
+    sprintf(output_filename, "%.*s/%d-%zu.syncmerseed",
+	    dir_len, output_dir, 0, s_idx);
+    saveSeeds(output_filename, k, seeds);
+
+    double density = (double) seeds.size();
+
+    seeds.clear();
+    get_syncmers(revComp(s), seeds);
+    sprintf(output_filename, "%.*s/%d-%zu.syncmerseed",
+	    dir_len, output_dir, 1, s_idx);
+    saveSeeds(output_filename, k, seeds);
+
+    return (density + seeds.size())/(s.length()<<1);
+}

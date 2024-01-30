@@ -1,5 +1,5 @@
 #include "../seedfactory.h"
-#include "../subseqhash2seeding.h"
+#include "../subseq2strobeseeding.h"
 #include <cstring>
 #include <fstream>
 #include <vector>
@@ -10,14 +10,16 @@
 using namespace std;
 
 int main(int argc, const char * argv[]){    
-    if(argc != 6){
-	fprintf(stderr, "usage: genSubseq2Seeds.out readFile n k d randTableFile\n");
+    if(argc != 8){
+	fprintf(stderr, "usage: genSubseq2strobeSeeds.out readFile n k d randTableFile w pre_k\n");
 	return 1;
     }
 
     int n = atoi(argv[2]);
     int k = atoi(argv[3]);
     int d = atoi(argv[4]);
+    int w = atoi(argv[6]);
+    int pre_k = atoi(argv[7]);
 
     int dim1 = (n+1) * (k+1) * d;
 
@@ -28,8 +30,8 @@ int main(int argc, const char * argv[]){
     }
 
     char output_dir[500];
-    int dir_len = sprintf(output_dir, "%s-locSeeds-n%d-k%d-d%d/",
-			  argv[1], n, k, d);
+    int dir_len = sprintf(output_dir, "%s-subseq2strobeSeeds-n%d-k%d-d%d-w%d-pre_k%d/",
+			  argv[1], n, k, d, w, pre_k);
     
     ifstream fin(argv[1]);
 
@@ -43,9 +45,10 @@ int main(int argc, const char * argv[]){
     int* revh[NUMTHREADS];
     
     {
-	seedFactory<subseqhash2seeding> factory(output_dir, dir_len,
-						n, k, d, k, argv[5]);
-	const subseqhash2seeding& myseeding = factory.getMySeeding();
+	seedFactory<subseq2strobeseeding> factory(output_dir, dir_len,
+						  n, k, d, k, w, pre_k,
+						  argv[5]);
+	const subseq2strobeseeding& myseeding = factory.getMySeeding();
 	int chunk_size = myseeding.getChunkSize();
 
 	mkdir(output_dir, 0744);

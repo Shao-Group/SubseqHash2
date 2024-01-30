@@ -809,3 +809,21 @@ void subseqhash2seeding::writeSubseq2Seeds(std::string s, DPCell* dp, DPCell* re
 	for(int i = 0; i < num_valid; i++)
     	fclose(fout[i]);
 }
+
+double subseqhash2seeding::getSeeds(std::string& s, const size_t s_idx,
+				  const char* output_dir, const int dir_len,
+				  DPCell* dp, DPCell* revdp,
+				  int* h, int* revh){
+    std::vector<std::vector<seed>> seeds(num_valid, std::vector<seed>(0));
+    getSubseq2Seeds(s, dp, revdp, h, revh, seeds);
+
+    double density = 0.0;
+    char output_filename[500];
+    for(int i=0; i<num_valid; ++i){
+	sprintf(output_filename, "%.*s/%d-%zu.subseqseed2",
+		dir_len, output_dir, i, s_idx);
+	saveSeeds(output_filename, k, seeds[i]);
+	density += seeds[i].size();
+    }
+    return density/(s.length()*num_valid);
+}
