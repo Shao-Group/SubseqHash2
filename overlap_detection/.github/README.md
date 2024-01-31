@@ -27,15 +27,15 @@ make product
 
 - To get overlapping pairs with the seeds generated using any of the above methods: Run `overlapBySeeds.out seedsDir k repeatId numReads fileExt` where `seedsDir` is the directory containing the seed files; `k` is the length of each seed; `repeatId` specifies seeds from which repeat is to be used; only the top `numReads` reads are considered for overlapping; and `fileExt` is the filename extension of the seed files, all possible choices are listed in the following table.
 
-| Seeding Method | fileExt |
-| --- | --- |
-| SubseqHash2 | subseqseed2 |
-| minimizer | mmseed |
-| syncmer | syncmerseed |
-| strobemer | strobemerseed |
-| SubseqHash2w | ss2sseed |
+  | Seeding Method | fileExt |
+  | --- | --- |
+  | SubseqHash2 | subseqseed2 |
+  | minimizer | mmseed |
+  | syncmer | syncmerseed |
+  | strobemer | strobemerseed |
+  | SubseqHash2w | ss2sseed |
 
-For seeding methods without repeat (minimizer, syncmer), the `repeatId` should be 0; for others, it starts from 0. Each call creates a file `overlap-n{numReads}-r{repeatId}.all-pair` within the seed directory. In this file, each line represents an overlapping pair in the format `read_id1 read_id2 number_of_shared_seeds`.
+  For seeding methods without repeat (minimizer, syncmer), the `repeatId` should be 0; for others, it starts from 0. Each call creates a file `overlap-n{numReads}-r{repeatId}.all-pair` within the seed directory. In this file, each line represents an overlapping pair in the format `read_id1 read_id2 number_of_shared_seeds`.
 
 - The `overlapFileOp.js` script can be used to take union/intersection of overlap detection results. It requires the [k8](https://github.com/attractivechaos/k8) library.
   - Example for obtaining the union of two result files (used for repeating SubseqHash2): `./overlapFileOp.js union sample-reads/SRX533603-sample3.efa-locSeeds-n60-k48-d11/overlap-n3-r{0,1}.all-pair > union2.all-pair`.
