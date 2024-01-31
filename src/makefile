@@ -1,6 +1,6 @@
 CC=gcc
 CPP=g++
-CFLAGS+= -m64 -g -Wall -std=c++11
+CFLAGS+= -m64 -g -Wall -std=c++11 -march=native
 LIBS=
 ALLDEP:= $(patsubst %.h,%.o,$(filter-out seedfactory.h, $(wildcard *.h))) seedfactory.h ./strobemer/index.o
 
@@ -8,11 +8,11 @@ ALLDEP:= $(patsubst %.h,%.o,$(filter-out seedfactory.h, $(wildcard *.h))) seedfa
 all: strobemer $(patsubst %.cpp,%.out,$(filter-out $(patsubst %.h,%.cpp,$(wildcard *.h)), $(wildcard *.cpp)))
 
 .PHONY: product-c++11
-product-c++11: CFLAGS = -O3 -std=c++11
+product-c++11: CFLAGS = -O3 -std=c++11 -march=native
 product-c++11: strobemer $(ALLDEP) $(patsubst %.cpp,%.out,$(filter-out $(patsubst %.o,%.cpp,$(ALLDEP)) $(ALLILP), $(wildcard *.cpp)))
 
 .PHONY: product
-product: CFLAGS = -O3 -std=c++14
+product: CFLAGS = -O3 -std=c++14 -march=native
 product: strobemer $(ALLDEP) $(patsubst %.cpp,%.out,$(filter-out $(patsubst %.o,%.cpp,$(ALLDEP)) $(ALLILP), $(wildcard *.cpp)))
 
 ./strobemer/index.o: ./strobemer/index.cpp

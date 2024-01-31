@@ -15,7 +15,7 @@ uint64_t syncmerseeding::murmur64(kmer key)
 
 void syncmerseeding::get_syncmers(std::string str, std::vector<seed>& seeds)
 {
-    size_t len = str.length();
+    int len = str.length();
     std::list<MMentry> que;
 
     kmer mask = (1ULL<<(s<<1)) - 1;
@@ -23,10 +23,10 @@ void syncmerseeding::get_syncmers(std::string str, std::vector<seed>& seeds)
 
     kmer now_k = 0;
     kmer now = 0;
-    size_t l = 0;
+    int l = 0;
     uint64_t v;
 
-    for(size_t i = 0; i < len; i++)
+    for(int i = 0; i < len; i++)
     {
         if(str[i] == 'N')
         {
@@ -59,7 +59,6 @@ void syncmerseeding::get_syncmers(std::string str, std::vector<seed>& seeds)
                     tmp.st = i - k + 1;
                     tmp.ed = i;
                     tmp.hashval = now_k;
-		    tmp.str = now_k;
 
                     seeds.push_back(tmp);
                 }
@@ -69,13 +68,13 @@ void syncmerseeding::get_syncmers(std::string str, std::vector<seed>& seeds)
 }
 
 double syncmerseeding::getSeeds(std::string& s, const size_t s_idx,
-				const char* output_dir, const int dir_len){
+                const char* output_dir, const int dir_len){
     std::vector<seed> seeds;
     get_syncmers(s, seeds);
     
     char output_filename[500];
     sprintf(output_filename, "%.*s/%d-%zu.syncmerseed",
-	    dir_len, output_dir, 0, s_idx);
+        dir_len, output_dir, 0, s_idx);
     saveSeeds(output_filename, k, seeds);
 
     double density = (double) seeds.size();
@@ -83,7 +82,7 @@ double syncmerseeding::getSeeds(std::string& s, const size_t s_idx,
     seeds.clear();
     get_syncmers(revComp(s), seeds);
     sprintf(output_filename, "%.*s/%d-%zu.syncmerseed",
-	    dir_len, output_dir, 1, s_idx);
+        dir_len, output_dir, 1, s_idx);
     saveSeeds(output_filename, k, seeds);
 
     return (density + seeds.size())/(s.length()<<1);

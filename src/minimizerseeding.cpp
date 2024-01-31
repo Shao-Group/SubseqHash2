@@ -15,17 +15,17 @@ inline uint64_t minimizerseeding::hash64(kmer s, uint64_t mask)
 
 void minimizerseeding::get_minimizers(std::string s, std::vector<seed>& seeds)
 {
-    size_t len = s.length();
+    int len = s.length();
     std::list<MMentry> que;
     std::vector<MMentry> kmerlist;
 
     kmer mask = (1ULL<<(k<<1)) - 1;
 
     kmer now = 0;
-    size_t l = 0;
+    int l = 0;
     uint64_t v;
 
-    for(size_t i = 0; i < len; i++)
+    for(int i = 0; i < len; i++)
     {
         if(s[i] == 'N')
         {
@@ -39,14 +39,14 @@ void minimizerseeding::get_minimizers(std::string s, std::vector<seed>& seeds)
         if(++l >= k)
         {
             v = hash64(now, mask);
-            kmerlist.push_back((MMentry){v, i - k + 1, now});
+            kmerlist.push_back((MMentry){v, i + 1 - k, now});
         }
     }
 
     l = 0;
     int sz = kmerlist.size();
 
-    for(size_t i = 0; i <= len - k; i++)
+    for(int i = 0; i <= len - k; i++)
     {
         if(l < sz && kmerlist[l].pos == i)
         {
@@ -75,13 +75,13 @@ void minimizerseeding::get_minimizers(std::string s, std::vector<seed>& seeds)
 }
 
 double minimizerseeding::getSeeds(std::string& s, const size_t s_idx,
-				  const char* output_dir, const int dir_len){
+                  const char* output_dir, const int dir_len){
     std::vector<seed> seeds;
     get_minimizers(s, seeds);
 
     char output_filename[500];
     sprintf(output_filename, "%.*s/%d-%zu.mmseed",
-	    dir_len, output_dir, 0, s_idx);
+        dir_len, output_dir, 0, s_idx);
     saveSeeds(output_filename, k, seeds);
 
     double density = (double) seeds.size();
@@ -89,7 +89,7 @@ double minimizerseeding::getSeeds(std::string& s, const size_t s_idx,
     seeds.clear();
     get_minimizers(revComp(s), seeds);
     sprintf(output_filename, "%.*s/%d-%zu.mmseed",
-	    dir_len, output_dir, 1, s_idx);
+        dir_len, output_dir, 1, s_idx);
     saveSeeds(output_filename, k, seeds);
 
     return (density + seeds.size())/(s.length()<<1);

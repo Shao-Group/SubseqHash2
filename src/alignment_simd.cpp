@@ -1,18 +1,19 @@
-#include "subseq2strobeseeding.h"
+#include "subseq2simdseeding.h"
 #include <cstring>
 #include <fstream>
 #include <vector>
+#include <memory>
 #include <iostream>
 
 using namespace std;
 
+const int maxd = 32;
 int n,k,d, dim1;
-int w, prek;
 
 double ans[20] = {0}; //Number of matches, Number of true-matches, precision of seed-matches, sequence cover, false sequence cover, matching cover, island(sc), density
 //seeding time, seed-match time 
 DPCell* dp, *revdp;
-int* h, *revh;
+short* h, *revh;
 const int maxlen = 1<<20;
 
 vector<seedmatch> matches;
@@ -24,7 +25,7 @@ vector<bool> mcover2(maxlen, 0);
 vector<bool> fscover(maxlen, 0);
 vector<bool> fscover2(maxlen, 0);
 
-void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding & sub2)
+void pseudo_match(string s, string t, vector<int> &align, subseqhash2SIMDseeding & sub2)
 {
 	int lens = s.length();
 	int lent = t.length();
@@ -38,9 +39,12 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
     clock_t start,end;
 
     start = clock();
-	sub2.getSubseq2Seeds(s, dp, revdp, h, revh, seeds);
-	sub2.getSubseq2Seeds(t, dp, revdp, h, revh, seedt);
+	sub2.getSubseq2Seeds(s, dp, h, 
+		revdp, revh, seeds);
+	sub2.getSubseq2Seeds(t, dp, h, 
+		revdp, revh, seedt);
     end = clock();
+
 
     ans[8] += (double)(end-start)/CLOCKS_PER_SEC;
 
@@ -56,9 +60,8 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
 
 	uint64_t x1;
 
-
 	for(int j = 0; j < seednum; j++)
-	{
+	{	    
     	start = clock();
 		ssh_index* ht = index_build(seeds[j]);
 		matches.clear();
@@ -72,14 +75,14 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
 		for(seedmatch m: matches)
 		{
 			int tp = 0;
-			
-			if(m.s1->str!= m.s2->str)
+
+			if(m.s1->psi != m.s2->psi || m.s1->str != m.s2->str)
 			{	
 				totalmatches--;
 				continue;
 			}
-
-			for(int i = 0; i < n * w + prek; i++)
+			
+			for(int i = 0; i < n; i++)
 				if((m.s1->index>>i) & 1)
 				{
 					x1 = align[m.s1->st + i]; 
@@ -87,35 +90,13 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
 						tp += (m.s2->index>>(x1-m.s2->st)) & 1;
 				}
 
-			// cout<<m.s1->st<<" "<<m.s2->st<<" "<<align[m.s1->st]<<endl;
-			// cout<<tp<<" "<<k*w + prek<<endl;
-
-			// char* str1 = (char*)malloc(sizeof(char) * (k*w+prek));
-			// char* str2 = (char*)malloc(sizeof(char) * (k*w+prek));
-
-			// decode(m.s1->str, k*w+prek, str1);
-			// decode(m.s2->str, k*w+prek, str2);
-			// for(int i = 0; i < n * w + prek; i++)
-			// 	if((m.s1->index>>i) & 1)
-			// 		cout<<s[m.s1->st + i];
-			// cout<<" ";
-
-			// for(int i = 0; i < n * w + prek; i++)
-			// 	if((m.s2->index>>i) & 1)
-			// 		cout<<t[m.s2->st + i];
-			// cout<<"\n";				
-
-			// printf("%.*s %.*s\n", (k*w+prek), str1, (k*w+prek),str2);
-			// cout<<s.substr(m.s1->st, prek)<<" "<<t.substr(m.s2->st, prek)<<endl;
-
-			if(2 * tp >= k * w + prek)
+			if(2 * tp >= k)
 			{
 				truematches++;	
-
-				for(int i = 0; i < n * w + prek; i++)
+				for(int i = 0; i < n; i++)
 					if((m.s1->index>>i) & 1)
 						scover[m.s1->st + i] = 1;
-				for(int i = 0; i < n * w + prek; i++)
+				for(int i = 0; i < n; i++)
 					if((m.s2->index>>i) & 1)
 						scover2[m.s2->st + i] = 1;
 
@@ -126,14 +107,14 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
 			}
 			else
 			{			
-				for(int i = 0; i < n * w + prek; i++)
+				for(int i = 0; i < n; i++)
 					if((m.s1->index>>i) & 1)
 						fscover[m.s1->st + i] = 1;
-				for(int i = 0; i < n * w + prek; i++)
+				for(int i = 0; i < n; i++)
 					if((m.s2->index>>i) & 1)
 						fscover2[m.s2->st + i] = 1;
 			}
-		} 
+		}
 
 		ans[7] += double(seeds[j].size())/s.length() + double(seedt[j].size())/t.length();
 		totalmatches += matches.size();
@@ -143,7 +124,7 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
 	int sc = 0, sc2 = 0;
 	int fsc = 0, fsc2 = 0;
 	int mc = 0, mc2 = 0;
-	long long island1 = 0, island2 = 0;
+	int island1 = 0, island2 = 0;
 	int inv = 0;
 
 	for(int i = 0; i < lens; i++)
@@ -156,14 +137,14 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
 			inv++;
 		else if(inv)
 		{
-			island1 += (long long)inv * inv;
+			island1 += inv * inv;
 			inv = 0;
 		}
 	}
 
 	if(inv)
 	{
-		island1 += (long long)inv * inv;
+		island1 += inv * inv;
 		inv = 0;
 	}
 
@@ -177,13 +158,13 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
 			inv++;
 		else if(inv)
 		{
-			island2 += (long long)inv * inv;
+			island2 += inv * inv;
 			inv = 0;
 		}
 	}
 	if(inv)
 	{
-		island2 += (long long)inv * inv;
+		island2 += inv * inv;
 		inv = 0;
 	}
 
@@ -200,31 +181,52 @@ void pseudo_match(string s, string t, vector<int> &align, subseq2strobeseeding &
 	ans[6] += double(island2) / lent + double(island1) / lens;
 }
 
+void *aligned_malloc(size_t required_bytes, size_t alignment) 
+{
+  void *p1;
+  void **p2;
+  int offset = alignment-1 +sizeof(void*);
+
+  if((p1=(void*)malloc(required_bytes+offset))==NULL)
+  	return NULL;
+
+  p2=(void**)(((size_t)(p1)+offset)&~(alignment-1));
+  p2[-1]=p1;
+  return p2;
+}
+
 int main(int argc, const char * argv[])
 {    
-    if(argc != 8)
+    if(argc != 7)
     {
-		printf("usage: alignment_substro.out readFile n k d t prek randTableFile\n");
-		return 1;
+				printf("usage: alignment_sub2.out readFile n k d t randTableFile\n");
+				return 1;
     }
 
     n = atoi(argv[2]);
     k = atoi(argv[3]);
     d = atoi(argv[4]);
     int subsample = atoi(argv[5]);
-    w = 1;
-    prek = atoi(argv[6]);
-    dim1 = (n+1) * (k+1) * d;
+    dim1 = (n+1) * (k+1) * maxd;
 
-    subseq2strobeseeding sub2(n, k, d, subsample, w, prek);
-    sub2.init(argv[7]);
+    subseqhash2SIMDseeding sub2(n, k, d, subsample);
+    sub2.init(argv[6]);
 
 	int chunk_size = sub2.getChunkSize();
 
-	dp = (DPCell*) malloc(sizeof *dp * chunk_size * (dim1));
-	revdp = (DPCell*) malloc(sizeof *revdp * chunk_size * dim1);
-	h = (int*) malloc(sizeof *h * dim1);
-	revh = (int*) malloc(sizeof *revh * dim1);
+	// dp = (DPCell*) malloc(sizeof *dp * chunk_size * (n+1) * (k+1));
+	// revdp = (DPCell*) malloc(sizeof *revdp * chunk_size * (n+1) * (k+1));
+	dp = (DPCell*) aligned_alloc(32, sizeof *dp * chunk_size * (n+1) * (k+1));
+	revdp = (DPCell*) aligned_alloc(32, sizeof *dp * chunk_size * (n+1) * (k+1));
+
+	h = (short*) aligned_alloc(64, sizeof(int) * (dim1));
+	revh = (short*) aligned_alloc(64, sizeof(int) * (dim1));
+
+	//h = (int*) malloc(sizeof(int) * dim1);
+   // revf_max = (int*) aligned_alloc(64, sizeof(int) * chunk_size * (dim1));
+  // revf_min = (int*) aligned_alloc(64, sizeof(int) * chunk_size * (dim1));
+  // revg_max = (int*) aligned_alloc(64, sizeof(int) * chunk_size * (dim1));
+  // revg_min = (int*) aligned_alloc(64, sizeof(int) * chunk_size * (dim1));
 
 	ifstream fin(argv[1]);
 
@@ -249,7 +251,7 @@ int main(int argc, const char * argv[])
 		pseudo_match(seq, seq2, align, sub2);
 		num++;
 	}	
-	printf("%d/%d/%d/%d/%d/%d, %.2lf, %.2lf, %.4lf, %.4lf, %.4lf, %.4lf, %.2lf, %.4lf, %.2lf, %.2lf\n", n, k, d, subsample, w, prek,
+	printf("%d/%d/%d/%d, %.2lf, %.2lf, %.4lf, %.4lf, %.4lf, %.4lf, %.2lf, %.4lf, %.2lf, %.2lf\n", n, k, d, subsample,
 		ans[0] / num, ans[1] / num, ans[2] / ans[10], ans[3] / (2*num), ans[4] / (2*num), ans[5] / (2*num), 
 		ans[6] / (2*num), ans[7] / (2*num), ans[8], ans[9]);
 

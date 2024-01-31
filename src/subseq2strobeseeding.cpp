@@ -767,15 +767,13 @@ void subseq2strobeseeding::combine(std::string s, size_t start, size_t end, DPCe
 				for(int i = 0; i < prek; i+=1)
 					enc = (enc << 2) | alphabetIndex(s[st + start + i]);
 
-				tmp.hashval = enc;
+				//tmp.hashval = enc;
 
 				for(int window = 0; window < w; window++)
 					enc = (enc << (2*k)) + seedtmp[num][st + prek + window * n].str;
 
 				tmp.str = enc;
-
-				for(int window = 0; window < w; window++)
-					tmp.hashval += seedtmp[num][st + prek + window * n].hashval;
+				tmp.hashval = kmerHash{}(enc);
 
 		    	tmp.psi = seedtmp[num][st + prek].psi;
 				seeds[num].push_back(tmp);

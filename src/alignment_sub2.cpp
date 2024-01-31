@@ -72,7 +72,7 @@ void pseudo_match(string s, string t, vector<int> &align, subseqhash2seeding & s
 		{
 			int tp = 0;
 
-			if(m.s1->psi != m.s2->psi)
+			if(m.s1->str!= m.s2->str)
 			{	
 				totalmatches--;
 				continue;
