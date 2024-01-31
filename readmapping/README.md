@@ -23,7 +23,9 @@ There is also an example `./reads/sample`.
   - Seeding for reads `../src/readseeding_sub2.out n k d t table_file read_file`.
 `read_file` is the name of the reference genome. The output seeds are store at ./readseed/.
 
-  - Get seed matching results `../src/readmapping_sub2.out n k d t read_file`. It will take the seeds from `./refseed` and `./readseed`. The output format is parameters, number of seed-matches, number of true seed-matches, the average ratio of true seed-matches, coverage of true seed-matches, coverage of false seed-matches, matching coverage of true seed-matches, the island size, the density of seeds.
+  - Get seed matching results `../src/readmapping_sub2.out n k d t read_file`. It will take the seeds from `./refseed` and `./readseed`. The output format is parameters, 
+number of seed-matches, number of true seed-matches, ratio of true seed-matches, the average ratio of true seed-matches per read, 
+number of 200bp segments, number of 200bp segments with true seed-matches, sensitivity of segments with true seed-matches.
 
   - An example on sample data:
     ```
