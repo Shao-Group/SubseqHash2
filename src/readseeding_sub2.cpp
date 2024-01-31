@@ -1,4 +1,4 @@
-#include "subseqhash2seeding.h"
+#include "subseq2simdseeding.h"
 #include "util.h"
 #include <cstring>
 #include <fstream>
@@ -7,10 +7,11 @@
 
 using namespace std;
 
+const int maxd = 32;
 int n,k,d, dim1;
 
 DPCell* dp, *revdp;
-int* h, *revh;
+short* h, *revh;
 
 FILE* fout[50];
 
@@ -20,9 +21,9 @@ int main(int argc, const char * argv[])
     k = atoi(argv[2]);
     d = atoi(argv[3]);
     int subsample = atoi(argv[4]);
-    dim1 = (n+1) * (k+1) * d;
+    dim1 = (n+1) * (k+1) * maxd;
 
-    subseqhash2seeding sub2(n, k, d, subsample);
+    subseqhash2SIMDseeding sub2(n, k, d, subsample);
     sub2.init(argv[5]);
 
     clock_t start,end;
@@ -30,24 +31,22 @@ int main(int argc, const char * argv[])
 
 	int chunk_size = sub2.getChunkSize();
 
-	dp = (DPCell*) malloc(sizeof *dp * chunk_size * (dim1));
-	revdp = (DPCell*) malloc(sizeof *revdp * chunk_size * dim1);
-	h = (int*) malloc(sizeof *h * dim1);
-	revh = (int*) malloc(sizeof *revh * dim1);
+	dp = (DPCell*) aligned_alloc(32, sizeof *dp * chunk_size * (n+1) * (k+1));
+	revdp = (DPCell*) aligned_alloc(32, sizeof *dp * chunk_size * (n+1) * (k+1));
+	h = (short*) aligned_alloc(64, sizeof(short) * (dim1));
+	revh = (short*) aligned_alloc(64, sizeof(short) * (dim1));
 
-	string species = argv[6];
+	ifstream refin(argv[6]);
+	string info, refseq;
 
 	for(int i = 0; i < subsample; i++)
 	{		
-		string path = "./readsub2/" + species + "/" + to_string(n) + "_" + to_string(k) + "_" + to_string(d) + "_" + to_string(i);
+		string path = "./readseed/" + to_string(n) + "_" + to_string(k) + "_" + to_string(d) + "_" + to_string(i);
 		//saveSeedsPosotion(path.c_str(), seeds[i]);
 		fout[i] = fopen(path.c_str(), "wb");
 	}
 
 
-
-	ifstream refin("./reads/" + species);
-	string info, refseq;
     uint64_t tmp = 0;
     kmer zkmer = 0;
     int num = 0;
@@ -56,13 +55,12 @@ int main(int argc, const char * argv[])
 	while(getline(refin, refseq))
 	{
 		getline(refin, info);
-		getline(refin, info);
 		vector<vector<seed>> seeds(subsample, vector<seed>(0));
 
 		//cout<<refseq<<endl;
 
     	start = clock();
-		sub2.getSubseq2Seeds(refseq, dp, revdp, h, revh, seeds);
+		sub2.getSubseq2Seeds(refseq, dp, h, revdp, revh, seeds);
 		end = clock();
 
 
