@@ -3,7 +3,7 @@ CFLAGS+= -m64 -g -Wall -std=c++11
 
 .PHONY: dependency-%
 dependency-%:
-	$(MAKE) -C .. $(subst dependency-,,$@)
+	$(MAKE) -C ../src $(subst dependency-,,$@)
 
 .PHONY: all
 all: dependency-all $(patsubst %.cpp, %.out, $(wildcard *.cpp))
@@ -12,7 +12,8 @@ all: dependency-all $(patsubst %.cpp, %.out, $(wildcard *.cpp))
 product: CFLAGS = -O3 -std=c++14
 product: dependency-product $(patsubst %.cpp, %.out, $(wildcard *.cpp))
 
-DEPENDENCIES = ../seedfactory.h $(patsubst %.cpp, %.o, $(wildcard ../*seeding.cpp)) ../strobemer/index.o ../util.o
+DEPENDENCIES = ../src/seedfactory.h $(patsubst %.cpp, %.o, $(wildcard ../src/*seeding.cpp)) ../src/strobemer/index.o ../src/util.o
+.SECONDARY: $(DEPENDENCIES)
 
 %.out: %.cpp $(DEPENDENCIES) makefile 
 	g++ $(CFLAGS) -o $@ $(filter-out makefile ../seedfactory.h, $^) -pthread

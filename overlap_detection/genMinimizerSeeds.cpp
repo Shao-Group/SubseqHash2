@@ -1,5 +1,5 @@
-#include "../seedfactory.h"
-#include "../syncmerseeding.h"
+#include "../src/seedfactory.h"
+#include "../src/minimizerseeding.h"
 #include <cstring>
 #include <fstream>
 #include <vector>
@@ -11,16 +11,16 @@ using namespace std;
 
 int main(int argc, const char * argv[]){    
     if(argc != 4){
-	fprintf(stderr, "usage: genSyncmerSeeds.out readFile k s\n");
+	fprintf(stderr, "usage: genMinimizerSeeds.out readFile w k\n");
 	return 1;
     }
 
-    int k = atoi(argv[2]);
-    int s = atoi(argv[3]);
+    int w = atoi(argv[2]);
+    int k = atoi(argv[3]);
 
     char output_dir[500];
-    int dir_len = sprintf(output_dir, "%s-syncmerSeeds-k%d-s%d/",
-			  argv[1], k, s);
+    int dir_len = sprintf(output_dir, "%s-minimizerSeeds-w%d-k%d/",
+			  argv[1], w, k);
     
     ifstream fin(argv[1]);
 
@@ -28,11 +28,7 @@ int main(int argc, const char * argv[]){
     size_t read_idx = 0;
     
     {
-	seedFactory<syncmerseeding> factory(output_dir, dir_len, k, s);
-	syncmerseeding& myseeding = factory.getMySeeding();
-	//closed syncmer
-	myseeding.add(0);
-	myseeding.add(k-s);
+	seedFactory<minimizerseeding> factory(output_dir, dir_len, k, w);
 
 	mkdir(output_dir, 0744);
 
@@ -47,7 +43,7 @@ int main(int argc, const char * argv[]){
 	    ++ read_idx;
 	    factory.addJob(move(read), read_idx);
 	    //skip the mapping info
-	    fin.ignore(numeric_limits<streamsize>::max(), '\n');
+	    //fin.ignore(numeric_limits<streamsize>::max(), '\n');
 	}
     }
 

@@ -1,5 +1,5 @@
-#include "../seedfactory.h"
-#include "../strobemerseeding.h"
+#include "../src/seedfactory.h"
+#include "../src/strobemerseeding.h"
 #include <cstring>
 #include <fstream>
 #include <vector>
@@ -48,7 +48,7 @@ int main(int argc, const char * argv[]){
 	    ++ read_idx;
 	    factory.addJob(move(read), read_idx);
 	    //skip the mapping info
-	    fin.ignore(numeric_limits<streamsize>::max(), '\n');
+	    //fin.ignore(numeric_limits<streamsize>::max(), '\n');
 	}
     }
 
