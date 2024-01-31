@@ -19,15 +19,15 @@ random_device rd;
 map<char, int> dict;
 
 
-int64_t A[100][4][50];
+int A[100][4][50];
 int B1[100][4][50];
 int B2[100][4][50];
 
-int64_t revA[100][4][50];
+int revA[100][4][50];
 int revB1[100][4][50];
 int revB2[100][4][50];
 
-int64_t A3[100][4];
+int A3[100][4];
 
 int combine1[100][4];
 int combine2[100][4];
@@ -58,7 +58,7 @@ void init(int k, int d, string path)
 		
 	unsigned seed;
 	mt19937 generator(rd());
-	uniform_int_distribution<int64_t> distribution((int64_t)1<<45, (int64_t)1<<55);	
+	uniform_int_distribution<int> distribution(1<<5, 1<<10);	
 
 	for(int i = 0; i < k; i++)
 	{
@@ -156,7 +156,7 @@ void init(int k, int d, string path)
 		for(int j = 0; j < 4; j++)
 		{
 			for(int q = 0; q < d; q++)
-				fprintf(file, "%" PRId64 " ", A[i][j][q]);
+				fprintf(file, "%d ", A[i][j][q]);
 			fprintf(file, "\n");
 		}
 		fprintf(file, "\n");
@@ -189,7 +189,7 @@ void init(int k, int d, string path)
 		for(int j = 0; j < 4; j++)
 		{
 			for(int q = 0; q < d; q++)
-				fprintf(file, "%" PRId64 " ", revA[i][j][q]);
+				fprintf(file, "%d ", revA[i][j][q]);
 			fprintf(file, "\n");
 		}
 		fprintf(file, "\n");
@@ -229,7 +229,7 @@ void init(int k, int d, string path)
 	for(int i = 0; i < k; i++)
 	{
 		for(int j = 0; j < 4; j++)
-			fprintf(file, "%" PRId64 " ", A3[i][j]);
+			fprintf(file, "%d ", A3[i][j]);
 		fprintf(file, "\n");
 	}
 	fprintf(file, "\n");
