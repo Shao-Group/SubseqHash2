@@ -1,6 +1,8 @@
 ### Introduction
-SubseqHash2 is a seeding method that uses minimized subsequence as seeds. This repository provides source code for 4 different experiments in different folders.
-The folder `hashcollision` contains code for computing the probability of hash collision of different methods.
+SubseqHash2 employs a seeding approach that utilizes minimized subsequences as seeds. 
+Comparing to SubseqHash, SubseqHash2 not only produces high-quality seeds for input genome sequences but also demonstrates significantly improved running time.
+This repository includes the source code for four distinct experiments, each housed in its respective folder:
+folder `hashcollision` contains code for computing the probability of hash collision of different methods.
 `alignment` has code for comparing different methods in pairwise sequence alignment. `readmaping` has code for comparing different methods in mapping reads to reference genome.
 `overlap-detection` provides code for comparing SubseqHash with other methods on the seeding step of overlap detection.
 
