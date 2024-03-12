@@ -34,26 +34,22 @@ int main(int argc, const char * argv[])
 	h = (int*) malloc(sizeof *h * dim1);
 	revh = (int*) malloc(sizeof *revh * dim1);
 
-	string species = argv[7];
 
-	ifstream refin("./ref/" + species);
+	ifstream refin(argv[7]);
 	string info, refseq;
 
-	while(getline(refin, info))
-	{
-		getline(refin, refseq);
-		vector<vector<seed>> seeds(subsample, vector<seed>(0));
-		vector<FILE*> fout;
+	getline(refin, refseq);
+	vector<vector<seed>> seeds(subsample, vector<seed>(0));
+	vector<FILE*> fout;
 
-		info = info.substr(1, info.find(' ') - 1);
 
-		for(int i = 0; i < subsample; i++)
-		{		
-			string path = "./refsubstro/" + species + "/" + info + "_" + to_string(n) + "_" + to_string(k) + "_" + to_string(d) + "_" + to_string(i) + "_" + to_string(prek);
-			fout.push_back(fopen(path.c_str(), "wb"));
-		}
-		sub2.writeSubseq2Seeds(refseq, dp, revdp, h, revh, seeds, fout);
+	for(int i = 0; i < subsample; i++)
+	{		
+		string path = "./refseed_substro/" + to_string(n) + "_" + to_string(k) + "_" + to_string(d) + "_" + to_string(i) + "_" + to_string(prek);
+		fout.push_back(fopen(path.c_str(), "wb"));
 	}
+	sub2.writeSubseq2Seeds(refseq, dp, revdp, h, revh, seeds, fout);
+	
 
     return 0;
 }

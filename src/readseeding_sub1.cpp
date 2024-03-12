@@ -30,23 +30,21 @@ int main(int argc, const char * argv[])
 	dp = (DPCell*) malloc(sizeof *dp * (dim1));
 	h = (int*) malloc(sizeof *h * dim1);
 
-	string species = argv[6];
-
-	string path = "./readsub1/" + species + "/" + to_string(n) + "_" + to_string(k) + "_" + to_string(d) + "_" + to_string(subsample);
+	string path = "./readseed_sub1/" + to_string(n) + "_" + to_string(k) + "_" + to_string(d) + "_" + to_string(subsample);
 	fout = fopen(path.c_str(), "wb");
 
 
+	ifstream refin(argv[6]);
 
-	ifstream refin("./reads/" + species);
 	string info, refseq;
     uint64_t tmp = 0;
+    kmer zkmer = 0;
     int num = 0;
 
     double anstime = 0;
     
 	while(getline(refin, refseq))
 	{
-		getline(refin, info);
 		getline(refin, info);
 		vector<seed> seeds;
 		
@@ -59,12 +57,14 @@ int main(int argc, const char * argv[])
 	    for(auto s : seeds)
 	    {
 			fwrite(&(s.hashval), sizeof(int64_t), 1, fout);
+			fwrite(&(s.str), sizeof(kmer), 1, fout);
 			pos[0] = s.st;
 			pos[1] = s.index;
 			fwrite(pos, sizeof(uint64_t), 2, fout);
 	    }			
 
 	    fwrite(&(tmp), sizeof(uint64_t), 1, fout);
+		fwrite(&(zkmer), sizeof(kmer), 1, fout);
 		pos[0] = 0;
 		pos[1] = 0;
 		fwrite(pos, sizeof(uint64_t), 2, fout);
@@ -81,12 +81,14 @@ int main(int argc, const char * argv[])
 	    for(auto s : seeds)
 	    {
 			fwrite(&(s.hashval), sizeof(int64_t), 1, fout);
+			fwrite(&(s.str), sizeof(kmer), 1, fout);
 			pos[0] = s.st;
 			pos[1] = s.index;
 			fwrite(pos, sizeof(uint64_t), 2, fout);
 	    }			
 
 	    fwrite(&(tmp), sizeof(uint64_t), 1, fout);
+		fwrite(&(zkmer), sizeof(kmer), 1, fout);
 		pos[0] = 0;
 		pos[1] = 0;
 		fwrite(pos, sizeof(uint64_t), 2, fout);

@@ -27,24 +27,17 @@ int main(int argc, const char * argv[])
 	dp = (DPCell*) malloc(sizeof *dp * (dim1));
 	h = (int*) malloc(sizeof *h * dim1);
 
-	string species = argv[6];
 
-	ifstream refin("./ref/" + species);
-	string info, refseq;
+	ifstream refin(argv[6]);
+	string refseq;
 
-	while(getline(refin, info))
-	{
-		getline(refin, refseq);
-		vector<seed> seeds;
+	getline(refin, refseq);
+	getline(refin, refseq);
 
-		info = info.substr(1, info.find(' ') - 1);
+	vector<seed> seeds;
+	sub1.DP(refseq, dp, h, seeds);
 
-
-		sub1.DP(refseq, dp, h, seeds);
-
-		string path = "./refsub1/" + species + "/" + info + "_" + to_string(n) + "_" + to_string(k) + "_" + to_string(d) + "_" + to_string(subsample);
-		saveSeedsPosition(path.c_str(), seeds);
-	}
-
+	string path = "./refseed_sub1/" + to_string(n) + "_" + to_string(k) + "_" + to_string(d) + "_" + to_string(subsample);
+	saveSeedsStrPosition(path.c_str(), seeds);
     return 0;
 }

@@ -37,19 +37,15 @@ int main(int argc, const char * argv[])
 	h = (int*) malloc(sizeof *h * dim1);
 	revh = (int*) malloc(sizeof *revh * dim1);
 
-	string species = argv[7];
+	ifstream refin(argv[7]);
+	string info, refseq;
 
 	for(int i = 0; i < subsample; i++)
 	{		
-		string path = "./readsubstro/" + species + "/" + to_string(n) + "_" + to_string(k) + "_" + to_string(d) + "_" + to_string(i) + "_" + to_string(prek);
-		//saveSeedsPosotion(path.c_str(), seeds[i]);
+		string path = "./readseed_substro/" + to_string(n) + "_" + to_string(k) + "_" + to_string(d) + "_" + to_string(i) + "_" + to_string(prek);
 		fout[i] = fopen(path.c_str(), "wb");
 	}
 
-
-
-	ifstream refin("./reads/" + species);
-	string info, refseq;
     uint64_t tmp = 0;
     kmer zkmer = 0;
     int num = 0;
@@ -57,7 +53,6 @@ int main(int argc, const char * argv[])
 
 	while(getline(refin, refseq))
 	{
-		getline(refin, info);
 		getline(refin, info);
 		vector<vector<seed>> seeds(subsample, vector<seed>(0));
 
@@ -68,7 +63,6 @@ int main(int argc, const char * argv[])
 
 		for(int i = 0; i < subsample; i++)
 		{		
-			//cout<<i<<" "<<seeds[i].size()<<endl;
 		    uint64_t pos[2];//st, index
 		    for(auto s : seeds[i])
 		    {
