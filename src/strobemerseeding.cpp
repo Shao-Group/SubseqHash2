@@ -10,7 +10,6 @@ void strobemerseeding::get_strobemers(std::string str, std::vector<std::vector<s
         {
             randstrobes = seq_to_randstrobes2(w, k, w_min, w_max, str, 0, randseeds[i]);
 
-            printf("%d %d\n", randstrobes.size(), str.length());
             for(auto &t : randstrobes) // iterate over the strobemer tuples
             {
                 seed tmp;
@@ -18,7 +17,6 @@ void strobemerseeding::get_strobemers(std::string str, std::vector<std::vector<s
                 tmp.ed = std::get<3>(t) + k - 1;
                 tmp.index = std::get<3>(t) - tmp.st;
 
-                printf("%d %d\n", tmp.st, tmp.ed);
                 std::string strobe = str.substr(tmp.st, k) + str.substr(std::get<3>(t), k);
                 char cur[k*2];
 

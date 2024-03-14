@@ -12,9 +12,10 @@ ssh_index* refindex;
 
 double ans[20] = {0}; //Number of matches, Number of true-matches, precision of seed-matches, sequence cover, false sequence cover, matching cover, island(sc), density
 //seeding time, seed-match time 
-vector<bool> bcover(10000, 0);
+vector<vector<bool>> bcover;
 
 vector<seedmatch> matches;
+double matchdata[5100][2] = {0};
 
 void pseudo_match(string s, vector<int> &align, strobemerseeding seeding, int readnum)
 {
@@ -64,7 +65,7 @@ void pseudo_match(string s, vector<int> &align, strobemerseeding seeding, int re
 		if(tp >= k)
 		{
 			totaltruematches++;	
-			bcover[m.s2->st/200] = 1;
+			bcover[readnum][m.s2->st/200] = 1;
 		}
 	}
 
@@ -108,28 +109,35 @@ void pseudo_match(string s, vector<int> &align, strobemerseeding seeding, int re
 		if(tp >= k)
 		{
 			totaltruematches++;	
-			bcover[(lens - m.s2->ed - 1)/200] = 1;
+			bcover[readnum][(lens - m.s2->ed - 1)/200] = 1;
 		}
 	}
 
-	ans[0] += totalmatches;
-	ans[1] += totaltruematches;
-	if(totalmatches > 0)
+	matchdata[readnum][0] += totalmatches;
+	matchdata[readnum][1] += totaltruematches;
+}
+void stats(int readnum, int lent)
+{
+	ans[0] += matchdata[readnum][0];
+	ans[1] += matchdata[readnum][1];
+	if(matchdata[readnum][0] > 0)
 	{
 		ans[10] += 1;
-		ans[2] += double(totaltruematches)/totalmatches;
+		ans[2] += double(matchdata[readnum][1])/matchdata[readnum][0];
 	}
 
-	int nblock = lens/200;
+	int nblock = lent/200;
 	int bc = 0;
 	for(int i = 0; i < nblock; i++)
-		bc += bcover[i];
+		bc += bcover[readnum][i];
 
 	ans[3] += nblock;
 	ans[4] += bc;
 }
 
+
 vector<vector<seed>> seedu(1);
+vector<int> reads;
 
 int main(int argc, const char * argv[])
 {    
@@ -155,7 +163,6 @@ int main(int argc, const char * argv[])
 		getline(refin, refseq);
 
 		seeding.get_strobemers(refseq, seedu);
-		cout<<seedu[0].size()<<endl;
 		refindex = index_build(seedu[0]);
 
 		refin.close();
@@ -175,7 +182,11 @@ int main(int argc, const char * argv[])
 			}
 
 			if(r == 0)
+			{
+				reads.push_back(len);
+				bcover.push_back(vector<bool>(len/200 + 1, 0));
 				num++;
+			}
 
 			pseudo_match(refseq, align, seeding, numnum);
 			numnum++;
@@ -183,6 +194,8 @@ int main(int argc, const char * argv[])
 		readin.close();
 	}
 
+	for(int i = 0; i < num; i++)
+		stats(i, reads[i]);
 	printf("%d/%d/%d/%d/%d, %d, %d, %.4lf, %.4lf, %d, %d, %.4lf\n", k, w, w_min, w_max, seednum, int(ans[0]), int(ans[1]), ans[1]/ans[0], ans[2] / ans[10], int(ans[3]), int(ans[4]), ans[4]/ans[3]);
 
     return 0;
