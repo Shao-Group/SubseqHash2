@@ -199,8 +199,8 @@ int main(int argc, const char * argv[])
 {    
     if(argc != 7)
     {
-				printf("usage: alignment_sub2.out readFile n k d t randTableFile\n");
-				return 1;
+			printf("usage: alignment_simd.out readFile n k d t randTableFile\n");
+			return 1;
     }
 
     n = atoi(argv[2]);
