@@ -57,3 +57,24 @@ inline int64_t cgkseeding::smoothq (std::string& input, int st)
     }
     return output;
 }
+
+double cgkseeding::getSeeds(std::string& s, const size_t s_idx,
+			    const char* output_dir, const int dir_len){
+    std::vector<seed> seeds;
+    get_cgk(s, seeds);
+
+    char output_filename[500];
+    sprintf(output_filename, "%.*s/%d-%zu.cgkseed",
+	    dir_len, output_dir, 0, s_idx);
+    saveSeeds(output_filename, 3*k, seeds);
+
+    double density = (double) seeds.size();
+
+    seeds.clear();
+    get_cgk(revComp(s), seeds);
+    sprintf(output_filename, "%.*s/%d-%zu.cgkseed",
+	    dir_len, output_dir, 1, s_idx);
+    saveSeeds(output_filename, 3*k, seeds);
+
+    return (density + seeds.size())/(s.length()<<1);
+}

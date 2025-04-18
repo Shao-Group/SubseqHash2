@@ -59,7 +59,11 @@ public:
     inline int64_t cgk_embedding (const std::string& input, int st); 
     void get_cgk(std::string s, std::vector<seed>& seeds);
     inline int64_t smoothq (std::string& input, int st);
-    std::string cgk (const std::string& input); 
+    std::string cgk (const std::string& input);
+    //produce seeds for both s and revComp(s)
+    //stored as 0-s_idx.cgkseed and 1-s_idx.cgkseed respectively
+    double getSeeds(std::string& s, const size_t s_idx,
+		    const char* ouput_dir, const int dir_len);
 
 };
 #endif
