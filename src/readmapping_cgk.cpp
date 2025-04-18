@@ -1,5 +1,5 @@
-#include "cgkseeding.h"
-#include "util.h"
+#include "cgkseeding.hpp"
+#include "util.hpp"
 #include <cstring>
 #include <fstream>
 #include <vector>

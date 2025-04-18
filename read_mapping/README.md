@@ -43,3 +43,11 @@ number of 200bp segments, number of 200bp segments with true seed-matches, sensi
       ```
       ../src/readmapping_sync.out 20 10 ./ref/sample ./reads/sample 0 10
       ```
+  - An example of CGK on sample data. The arguments are k t ref_file read_file where `k` is the length of k-mer, `t` is the number of repeats.
+      ```
+      ../src/readmapping_cgk.out 20 5 ./ref/sample ./reads/sample
+      ```
+  - An example of syncmer on sample data. The arguments are k n w_min w_max t ref_file read_file. `k` is the length of substring, `n` is the number of substrsings to be concatenated,  `w_min` and  `w_max` are the positions for the window, `t` is the number of repeating times
+      ```
+      ../src/readmapping_stro.out 10 2 10 20 2 ./ref/sample ./reads/sample
+      ```

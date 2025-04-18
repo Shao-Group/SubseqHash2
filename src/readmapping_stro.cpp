@@ -161,6 +161,7 @@ int main(int argc, const char * argv[])
 		ifstream refin(argv[6]);
 
 		getline(refin, refseq);
+		getline(refin, refseq);
 
 		seeding.get_strobemers(refseq, seedu);
 		refindex = index_build(seedu[0]);
