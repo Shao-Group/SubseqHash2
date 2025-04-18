@@ -1,5 +1,5 @@
-#include "syncmerseeding.h"
-#include "util.h"
+#include "syncmerseeding.hpp"
+#include "util.hpp"
 #include <cstring>
 #include <fstream>
 #include <vector>

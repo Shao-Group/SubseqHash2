@@ -1,4 +1,4 @@
-#include "subseq2strobeseeding.h"
+#include "subseq2strobeseeding.hpp"
 #include <cstring>
 #include <fstream>
 #include <vector>

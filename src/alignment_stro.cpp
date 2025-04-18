@@ -1,4 +1,4 @@
-#include "strobemerseeding.h"
+#include "strobemerseeding.hpp"
 #include <cstring>
 #include <fstream>
 #include <vector>

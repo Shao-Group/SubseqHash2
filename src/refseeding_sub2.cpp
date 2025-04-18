@@ -1,5 +1,5 @@
-#include "subseq2simdseeding.h"
-#include "util.h"
+#include "subseq2simdseeding.hpp"
+#include "util.hpp"
 #include <cstring>
 #include <fstream>
 #include <vector>

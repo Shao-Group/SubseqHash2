@@ -1,4 +1,4 @@
-#include "minimizerseeding.h"
+#include "minimizerseeding.hpp"
 
 inline uint64_t minimizerseeding::hash64(kmer s, uint64_t mask)
 {

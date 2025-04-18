@@ -6,7 +6,7 @@
 */
 
 
-#include "seeding.h"
+#include "seeding.hpp"
 
 #include <sys/stat.h>
 #include <iostream>

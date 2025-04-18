@@ -5,8 +5,8 @@
   Last edited: 06/15/2023
 */
 
-#include "seeding.h"
-#include "util.h"
+#include "seeding.hpp"
+#include "util.hpp"
 #include <bits/stdc++.h>
 
 #ifndef _SYNCMERSEEDING_H

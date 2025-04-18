@@ -1,4 +1,4 @@
-#include "cgkseeding.h"
+#include "cgkseeding.hpp"
 #include <cstring>
 #include <fstream>
 #include <vector>

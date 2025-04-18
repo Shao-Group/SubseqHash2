@@ -1,7 +1,7 @@
 #pragma GCC target("avx512vl")
 // #pragma GCC optimize("O3")
 
-#include "subseq2simdseeding.h"
+#include "subseq2simdseeding.hpp"
 
 
 const short INF= 32767;

@@ -1,5 +1,5 @@
-#include "subseq2strobeseeding.h"
-#include "util.h"
+#include "subseq2strobeseeding.hpp"
+#include "util.hpp"
 #include <cstring>
 #include <fstream>
 #include <vector>

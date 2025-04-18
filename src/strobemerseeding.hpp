@@ -5,9 +5,9 @@
   Last edited: 06/21/2023
 */
 
-#include "seeding.h"
+#include "seeding.hpp"
 #include "strobemer/index.hpp"
-#include "util.h"
+#include "util.hpp"
 #include <algorithm>
 #include <chrono>
 #include <climits>

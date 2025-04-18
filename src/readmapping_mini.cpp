@@ -1,5 +1,5 @@
-#include "minimizerseeding.h"
-#include "util.h"
+#include "minimizerseeding.hpp"
+#include "util.hpp"
 #include <cstring>
 #include <fstream>
 #include <vector>

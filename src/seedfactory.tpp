@@ -1,4 +1,4 @@
-#include "seedfactory.h"
+#include "seedfactory.hpp"
 /*    
 void seedFactory::getSubseqSeeds(const Read &r, DPCell* dp, DPCell* revdp, int* h, int* revh)
 {

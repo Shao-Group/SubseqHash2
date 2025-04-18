@@ -1,4 +1,4 @@
-#include "subseq2simdseeding.h"
+#include "subseq2simdseeding.hpp"
 #include <cstring>
 #include <fstream>
 #include <vector>

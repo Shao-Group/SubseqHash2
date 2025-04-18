@@ -1,5 +1,5 @@
-#include "subseqhash2seeding.h"
-#include "util.h"
+#include "subseqhash2seeding.hpp"
+#include "util.hpp"
 #include <cstring>
 #include <fstream>
 #include <vector>

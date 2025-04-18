@@ -5,8 +5,8 @@
   Last edited: 12/5/2023
 */
 
-#include "seeding.h"
-#include "util.h"
+#include "seeding.hpp"
+#include "util.hpp"
 #include <bits/stdc++.h>
 #include <x86intrin.h>
 

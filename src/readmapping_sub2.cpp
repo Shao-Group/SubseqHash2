@@ -1,4 +1,4 @@
-#include "util.h"
+#include "util.hpp"
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -163,7 +163,7 @@ int main(int argc, const char * argv[])
 				seedt.push_back(tmp);
 			}	
 
-	    	if((i^1) < k)
+	    	if((i^1) < k && (i^1) < subsample)
 			    while(ret == 1)
 			    {
 					ret = fread(&hashval, sizeof(int64_t), 1, fin_rc);

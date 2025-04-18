@@ -1,4 +1,4 @@
-#include "subseqhash2seeding.h"
+#include "subseqhash2seeding.hpp"
 
 const int64_t INF=((int64_t)1)<<62;
 

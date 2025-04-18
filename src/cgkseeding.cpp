@@ -1,4 +1,4 @@
-#include "cgkseeding.h"
+#include "cgkseeding.hpp"
 
 void cgkseeding::get_cgk(std::string s, std::vector<seed>& seeds)
 {

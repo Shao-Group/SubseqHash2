@@ -1,4 +1,4 @@
-#include "seeding.h"
+#include "seeding.hpp"
 
 seeding::seeding(int n1, int k1)
 {

@@ -2,11 +2,11 @@
   CGK embedding seeding.
 
   By: Xiang@PSU
-  Last edited: 09/25/2023
+  Last edited: 04/18/2025
 */
 
-#include "seeding.h"
-#include "util.h"
+#include "seeding.hpp"
+#include "util.hpp"
 #include <bits/stdc++.h>
 
 #ifndef _CGKSEEDING_H
@@ -19,11 +19,13 @@ class cgkseeding: private seeding
 private:
     std::vector<int> generate_random_sampling_positions(int size_cgk, int size_smoothq)
     {
+        std::random_device rd;
+        std::mt19937 generator(rd());
         std::vector<int> hash_lsh;
         hash_lsh.reserve(size_cgk);
         for (int j = 0; j < size_cgk; j++)
             hash_lsh.push_back(j);
-        random_shuffle(hash_lsh.begin(), hash_lsh.end());
+        shuffle(hash_lsh.begin(), hash_lsh.end(), generator);
         hash_lsh.resize(size_smoothq);
 
         sort(hash_lsh.begin(), hash_lsh.end());

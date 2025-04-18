@@ -1,4 +1,4 @@
-#include "subseqhash1seeding.h"
+#include "subseqhash1seeding.hpp"
 
 const double INF=1e15;
 

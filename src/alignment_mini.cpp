@@ -1,4 +1,4 @@
-#include "minimizerseeding.h"
+#include "minimizerseeding.hpp"
 #include <cstring>
 #include <fstream>
 #include <vector>

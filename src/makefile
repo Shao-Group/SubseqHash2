@@ -2,10 +2,10 @@ CC=gcc
 CPP=g++
 CFLAGS+= -m64 -g -Wall -std=c++11 -march=native
 LIBS=
-ALLDEP:= $(patsubst %.h,%.o,$(filter-out seedfactory.h, $(wildcard *.h))) seedfactory.h ./strobemer/index.o
+ALLDEP:= $(patsubst %.hpp,%.o,$(filter-out seedfactory.hpp, $(wildcard *.hpp))) seedfactory.hpp ./strobemer/index.o
 
 .PHONY: all
-all: strobemer $(patsubst %.cpp,%.out,$(filter-out $(patsubst %.h,%.cpp,$(wildcard *.h)), $(wildcard *.cpp)))
+all: strobemer $(patsubst %.cpp,%.out,$(filter-out $(patsubst %.hpp,%.cpp,$(wildcard *.hpp)), $(wildcard *.cpp)))
 
 .PHONY: product-c++11
 product-c++11: CFLAGS = -O3 -std=c++11 -march=native
@@ -19,12 +19,12 @@ product: strobemer $(ALLDEP) $(patsubst %.cpp,%.out,$(filter-out $(patsubst %.o,
 	$(CPP) $(CFLAGS) -MMD -c ./strobemer/index.cpp -o ./strobemer/index.o
 
 %.out: %.cpp $(ALLDEP)
-	$(CPP) $(CFLAGS) -o $@ $(filter-out %.h, $^) $(LIBS)
+	$(CPP) $(CFLAGS) -o $@ $(filter-out %.hpp, $^) $(LIBS)
 %.out: %.c $(ALLDEP)
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
-%.o: %.cpp %.h makefile
+%.o: %.cpp %.hpp makefile
 	$(CPP) $(CFLAGS) -MMD -c $< -o $@
-%.o: %.c %.h makefile
+%.o: %.c %.hpp makefile
 	$(CC) $(CFLAGS) -MMD -c $< -o $@
 
 .PHONY: clean

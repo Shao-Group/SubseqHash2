@@ -5,8 +5,8 @@
   Last edited: 05/16/2023
 */
 
-#include "seeding.h"
-#include "util.h"
+#include "seeding.hpp"
+#include "util.hpp"
 #include <cstdint>
 #include <inttypes.h>
 #include <algorithm>

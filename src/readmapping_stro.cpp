@@ -1,5 +1,5 @@
-#include "strobemerseeding.h"
-#include "util.h"
+#include "strobemerseeding.hpp"
+#include "util.hpp"
 #include <cstring>
 #include <fstream>
 #include <vector>

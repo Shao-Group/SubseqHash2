@@ -1,4 +1,4 @@
-#include "util.h"
+#include "util.hpp"
 
 kmer encode(const char* s, const int k)
 {

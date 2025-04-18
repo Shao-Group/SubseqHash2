@@ -1,4 +1,4 @@
-#include "syncmerseeding.h"
+#include "syncmerseeding.hpp"
 #include <cstring>
 #include <fstream>
 #include <vector>

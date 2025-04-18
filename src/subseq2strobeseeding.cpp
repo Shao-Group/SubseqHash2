@@ -1,4 +1,4 @@
-#include "subseq2strobeseeding.h"
+#include "subseq2strobeseeding.hpp"
 const int64_t INF=(int64_t)1<<62;
 
 //accessing DPCell[chunk_size][n+1][k+1][d]

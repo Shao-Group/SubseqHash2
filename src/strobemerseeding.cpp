@@ -1,4 +1,4 @@
-#include "strobemerseeding.h"
+#include "strobemerseeding.hpp"
 
 void strobemerseeding::get_strobemers(std::string str, std::vector<std::vector<seed>>& seeds)
 {

@@ -1,4 +1,4 @@
-#include "syncmerseeding.h"
+#include "syncmerseeding.hpp"
 
 
 uint64_t syncmerseeding::murmur64(kmer key)
