@@ -12,6 +12,10 @@
 #include <map>
 #include <vector>
 #include <unordered_map>
+#include <cstdint>
+#include <string>
+#include <cstdlib>
+#include <cstdio>
 
 typedef __uint128_t kmer;
 

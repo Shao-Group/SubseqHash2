@@ -53,9 +53,10 @@ public:
 
     std::unordered_map<char, int> dict = { {'A', 0 }, { 'C', 1 }, { 'G', 2 }, { 'T', 3 }, { 'N', 4 } };
 
-    cgkseeding(int k1): seeding(k1, k1) {
+    cgkseeding(int k1, int r=0): seeding(k1, k1) {
         p = generate_random_binary(3 * k1);
     };
+    
     inline int64_t cgk_embedding (const std::string& input, int st); 
     void get_cgk(std::string s, std::vector<seed>& seeds);
     inline int64_t smoothq (std::string& input, int st);
