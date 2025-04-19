@@ -66,7 +66,7 @@ double cgkseeding::getSeeds(std::string& s, const size_t s_idx,
     char output_filename[500];
     sprintf(output_filename, "%.*s/%d-%zu.cgkseed",
 	    dir_len, output_dir, 0, s_idx);
-    saveSeeds(output_filename, 3*k, seeds);
+    saveSeeds(output_filename, 32, seeds);
 
     double density = (double) seeds.size();
 
@@ -74,7 +74,7 @@ double cgkseeding::getSeeds(std::string& s, const size_t s_idx,
     get_cgk(revComp(s), seeds);
     sprintf(output_filename, "%.*s/%d-%zu.cgkseed",
 	    dir_len, output_dir, 1, s_idx);
-    saveSeeds(output_filename, 3*k, seeds);
+    saveSeeds(output_filename, 32, seeds);
 
     return (density + seeds.size())/(s.length()<<1);
 }

@@ -6,7 +6,7 @@
   Last edited: 09/19/2023
 */
 
-#include "../src/util.h"
+#include "../src/util.hpp"
 #include <sys/stat.h>
 #include <iostream>
 #include <fstream>

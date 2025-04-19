@@ -1,5 +1,5 @@
-#include "../src/seedfactory.h"
-#include "../src/strobemerseeding.h"
+#include "../src/seedfactory.hpp"
+#include "../src/strobemerseeding.hpp"
 #include <cstring>
 #include <fstream>
 #include <vector>

@@ -1,5 +1,5 @@
-#include "../src/seedfactory.h"
-#include "../src/subseqhash2seeding.h"
+#include "../src/seedfactory.hpp"
+#include "../src/subseqhash2seeding.hpp"
 #include <cstring>
 #include <fstream>
 #include <vector>

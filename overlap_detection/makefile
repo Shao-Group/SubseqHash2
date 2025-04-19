@@ -12,9 +12,9 @@ all: dependency-all $(patsubst %.cpp, %.out, $(wildcard *.cpp))
 product: CFLAGS = -O3 -std=c++14
 product: dependency-product $(patsubst %.cpp, %.out, $(wildcard *.cpp))
 
-DEPENDENCIES = ../src/seedfactory.h $(patsubst %.cpp, %.o, $(wildcard ../src/*seeding.cpp)) ../src/strobemer/index.o ../src/util.o
+DEPENDENCIES = ../src/seedfactory.hpp $(patsubst %.cpp, %.o, $(wildcard ../src/*seeding.cpp)) ../src/strobemer/index.o ../src/util.o
 .SECONDARY: $(DEPENDENCIES)
 
 %.out: %.cpp $(DEPENDENCIES) makefile 
-	g++ $(CFLAGS) -o $@ $(filter-out makefile ../seedfactory.h, $^) -pthread
+	g++ $(CFLAGS) -o $@ $(filter-out makefile ../seedfactory.hpp, $^) -pthread
 #g++ -Wall -g -std=c++14 -o $@ $(filter-out makefile,$^) -pthread

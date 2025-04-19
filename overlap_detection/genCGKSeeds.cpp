@@ -1,5 +1,5 @@
-#include "../src/seedfactory.h"
-#include "../src/cgkseeding.h"
+#include "../src/seedfactory.hpp"
+#include "../src/cgkseeding.hpp"
 #include <cstring>
 #include <fstream>
 #include <vector>
@@ -19,7 +19,7 @@ int main(int argc, const char * argv[]){
     int r = atoi(argv[3]);
 
     char output_dir[500];
-    int dir_len = sprintf(output_dir, "%s-CGKSeeds-k%d-r$d/",
+    int dir_len = sprintf(output_dir, "%s-CGKSeeds-k%d-r%d/",
 			  argv[1], k, r);
     
     ifstream fin(argv[1]);
@@ -28,7 +28,7 @@ int main(int argc, const char * argv[]){
     size_t read_idx = 0;
     
     {
-	seedFactory<cgkseeding> factory(output_dir, dir_len, k);
+	seedFactory<cgkseeding> factory(output_dir, dir_len, k, r);
 
 	mkdir(output_dir, 0744);
 
