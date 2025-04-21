@@ -58,7 +58,7 @@ void syncmerseeding::get_syncmers(std::string str, std::vector<seed>& seeds)
 
                     tmp.st = i - k + 1;
                     tmp.ed = i;
-                    tmp.hashval = now_k;
+                    tmp.str = tmp.hashval = now_k;
 
                     seeds.push_back(tmp);
                 }
