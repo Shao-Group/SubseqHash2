@@ -30,11 +30,6 @@ int main(int argc, const char * argv[])
 	h = (int*) malloc(sizeof *h * dim1);
 	revh = (int*) malloc(sizeof *revh * dim1);
 
-	string path = argv[7];
-	FILE* fout = fopen(path.c_str(), "w");
-
-
-
 	ifstream refin(argv[6]);
 
 	string refseq;
@@ -42,27 +37,20 @@ int main(int argc, const char * argv[])
 	while(getline(refin, refseq))
 	{
 		vector<vector<seed>> seeds(subsample, vector<seed>(0));
+		getline(refin, refseq);
 
 		sub2.getSubseq2Seeds(refseq, dp, revdp, h, revh, seeds);
 
 		for(int i = 0; i < subsample; i++)
 		{		
-		    string name = "Order " + to_string(i+1) + '\n';
-
-		    fputs(name.c_str(), fout);
-		    
-		    for(auto s : seeds[i])
-		    {
-		    	fprintf(fout, "(%d, %ld)\t", s.psi, s.hashval);
-
-				char* seedstr = (char*)malloc(sizeof(char) *k);
-				decode(s.str, k, seedstr);
-				fputs(seedstr, fout);
-				fputs("\t", fout);
-
-				fputs("\n", fout);
-		    }			
-			fputs("\n", fout);
+			printf("Order %d:", i+1);
+		    for(auto s : seeds[i]) {
+				printf("%ld %I64ld ", s.st, s.hashval);
+				for(int i = 0; i < n; i++)
+					if((s.index>>i) & 1)
+						printf("%c", refseq[s.st + i]);
+				printf("\n");
+			}
 		}
 	}
 

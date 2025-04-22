@@ -15,3 +15,9 @@ git clone https://github.com/Shao-Group/subseqhash2.git
 cd src
 make product
 ``` 
+
+To use SubseqHash2 for seed generation, please refer to the example in `./src/sample.cpp`. You can run the following commands:
+
+- ` ../src/gentable.out k d ./table_saving_path` generates a random table for SubseqHash2, where `k` is the length of subsequence, `d` is a parameter, and `./table_saving_path` is the path of the file saving the tables. A sample file is at `./table/6_5` with k = 6 and d = 5.
+
+- Run `../src/sample.out n k d t table_file data.fasta` to get the sequence alignment results using SubseqHash2. `n`, `k` and `d` are the parameters, `t` is the number of repeating times, `table_file` is the path to the previously generated table file (with matching parameters). The data file must be in FASTA format. An example is `../src/sample.out 10 6 5 6 ./table/6_5 ./sample.fa`. The output gives the starting position, hash value, and the actual subsequence for each generated seed.
